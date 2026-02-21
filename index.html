@@ -454,11 +454,8 @@
       const moonIcon = document.getElementById("moon-icon");
 
       function updateTheme() {
-        if (
-          localStorage.theme === "dark" ||
-          (!("theme" in localStorage) &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
+        const theme = localStorage.theme || "light";
+        if (theme === "dark") {
           document.documentElement.classList.add("dark");
           sunIcon.classList.remove("hidden");
           moonIcon.classList.add("hidden");
@@ -489,13 +486,25 @@
 
       // DATA FETCHING & NORMALIZATION
       async function fetchPlaceholders() {
+        const cache = localStorage.getItem('santaan_placeholders_cache');
+        const timestamp = localStorage.getItem('santaan_placeholders_timestamp');
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        if (cache && timestamp && (Date.now() - timestamp < ONE_DAY)) {
+            placeholders = JSON.parse(cache);
+            console.log("Placeholders loaded from cache");
+            return;
+        }
+
         try {
           const response = await fetch(
             `${CONFIG.ENDPOINTS.UNSPLASH}&client_id=${CONFIG.UNSPLASH_CLIENT_ID}`,
           );
           const data = await response.json();
           placeholders = data.results.map((img) => img.urls.regular);
-          console.log("Placeholders loaded:", placeholders.length);
+          localStorage.setItem('santaan_placeholders_cache', JSON.stringify(placeholders));
+          localStorage.setItem('santaan_placeholders_timestamp', Date.now());
+          console.log("Placeholders loaded from API:", placeholders.length);
         } catch (err) {
           console.error("Unsplash fetch failed, using fallbacks");
           placeholders = [
@@ -514,9 +523,17 @@
       }
 
       async function fetchNews() {
-        console.log("Fetching news...");
+        const timestamp = localStorage.getItem('santaan_news_timestamp');
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        
+        // Skip if we have fresh content from last 24h
+        if (articles.length > 0 && timestamp && (Date.now() - timestamp < ONE_DAY)) {
+            console.log("News logic: Using 24h cache, skipping API calls.");
+            return;
+        }
+
+        console.log("Fetching fresh news...");
         document.getElementById("loader").classList.remove("hidden");
-        // Only add opacity if we don't have cached articles displayed
         if (articles.length === 0) {
             document.getElementById("news-container").classList.add("opacity-40");
         }
@@ -532,8 +549,6 @@
             }).then((r) => r.json()),
           ]);
 
-          console.log("Raw results:", results);
-
           const [bingRes, googleRes, hubRes] = results;
           let normalized = [];
 
@@ -541,7 +556,6 @@
           if (bingRes.status === "fulfilled") {
             const data = bingRes.value;
             const items = Array.isArray(data) ? data : data.value || data.news || [];
-            console.log("Bing items found:", items.length);
             items.forEach((item) => {
               normalized.push({
                 id: item.url || item.link || item.name || item.title,
@@ -560,7 +574,6 @@
           if (googleRes.status === "fulfilled") {
             const data = googleRes.value;
             const items = Array.isArray(data) ? data : data.news || data.value || [];
-            console.log("Google items found:", items.length);
             items.forEach((item) => {
               normalized.push({
                 id: item.link || item.url || item.title,
@@ -579,7 +592,6 @@
           if (hubRes.status === "fulfilled") {
             const data = hubRes.value;
             const items = data.results || (Array.isArray(data) ? data : []);
-            console.log("Hub items found:", items.length);
             items.forEach((item) => {
               normalized.push({
                 id: item.url || item.link || item.title,
@@ -594,40 +606,27 @@
             });
           }
 
-          // Deduplicate by URL
           const seenUrls = new Set();
           const newArticles = normalized.filter((article) => {
             if (!article.url || !article.title) return false;
-            const url = article.url
-              .split("?")[0]
-              .toLowerCase()
-              .replace(/\/$/, "");
+            const url = article.url.split("?")[0].toLowerCase().replace(/\/$/, "");
             if (seenUrls.has(url)) return false;
             seenUrls.add(url);
             return true;
           });
 
-          // Sort by date (newest first)
-          newArticles.sort((a, b) => {
-            const dateA = new Date(a.publishedAt || 0);
-            const dateB = new Date(b.publishedAt || 0);
-            return dateB - dateA;
-          });
+          newArticles.sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0));
 
-          // Check if articles actually changed before updating UI/Cache
           if (JSON.stringify(newArticles) !== JSON.stringify(articles)) {
               articles = newArticles;
               localStorage.setItem('santaan_news_cache', JSON.stringify(articles));
               localStorage.setItem('santaan_news_timestamp', Date.now());
               renderArticles();
-              console.log("Deduplicated particles refreshed:", articles.length);
-          } else {
-              console.log("No new articles found, cache is up to date.");
           }
 
         } catch (err) {
           console.error("Global fetch error:", err);
-          if (articles.length === 0) { // Only show error if we have no cache
+          if (articles.length === 0) {
               document.getElementById("error-state").classList.remove("hidden");
               document.getElementById("news-container").classList.add("hidden");
           }
@@ -660,8 +659,8 @@
         const img = article.imageUrl || getPlaceholder();
 
         return `
-                <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 opacity-0">
-                    <div class="relative h-56 overflow-hidden">
+                <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5" style="opacity: 1; transform: translateY(0);">
+                    <div class="relative h-56 overflow-hidden bg-gray-100">
                         <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
                     </div>
                     
@@ -709,33 +708,24 @@
           .map((article, idx) => createCard(article, idx))
           .join("");
 
-        // GSAP Entrance Animation
-        gsap.to(".news-card", {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          startAt: { y: 40 },
+        // Reset ScrollTrigger
+        ScrollTrigger.getAll().forEach(t => t.kill());
+
+        // Simple Staggered Animation for visible cards
+        gsap.from(".news-card", {
+          opacity: 0,
+          y: 20,
+          duration: 0.6,
+          stagger: {
+             amount: 0.8,
+             grid: "auto",
+             from: "start"
+          },
+          ease: "power2.out",
+          clearProps: "all" // Ensure we don't leave opacity: 0
         });
 
-        // Scroll animations for lazy reveal
-        gsap.utils.toArray(".news-card").forEach((card, i) => {
-          if (i > 6) {
-            // Only for cards not in initial viewport
-            gsap.from(card, {
-              scrollTrigger: {
-                trigger: card,
-                start: "top bottom-=50px",
-                toggleActions: "play none none none",
-              },
-              opacity: 0,
-              y: 30,
-              duration: 0.6,
-              ease: "power2.out",
-            });
-          }
-        });
+        ScrollTrigger.refresh();
       }
 
       // Header Scroll Effect
@@ -752,6 +742,8 @@
 
       // INIT
       async function init() {
+        // Initialize theme carefully
+        if (!localStorage.theme) localStorage.theme = "light";
         updateTheme();
 
         // Animation for hero
@@ -763,19 +755,22 @@
           ease: "power4.out",
         });
 
-        // Load from cache for perceived performance
-        const cache = localStorage.getItem('santaan_news_cache');
-        if (cache) {
+        // 1. First Load Placeholders (Required for images)
+        await fetchPlaceholders();
+
+        // 2. Load and Render from Cache IMMEDIATELY
+        const cachedNews = localStorage.getItem('santaan_news_cache');
+        if (cachedNews) {
             try {
-                articles = JSON.parse(cache);
-                console.log("Loaded from cache:", articles.length);
+                articles = JSON.parse(cachedNews);
+                console.log("Sync: Rendered from cache (" + articles.length + ")");
                 renderArticles();
             } catch (e) {
-                console.error("Cache parse error:", e);
+                console.error("Cache error:", e);
             }
         }
 
-        await fetchPlaceholders();
+        // 3. Fetch Fresh Data only if needed
         await fetchNews();
       }
 
