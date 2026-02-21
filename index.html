@@ -223,21 +223,17 @@
           transform: translate(24px, 0);
         }
       }
+      .bg-shape {
+        position: absolute;
+        filter: blur(60px);
+        opacity: 0.4;
+        will-change: transform;
+      }
     </style>
   </head>
   <body class="antialiased">
-    <!-- Background Elements -->
-    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div
-        class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary-500/10 blur-[120px]"
-      ></div>
-      <div
-        class="absolute top-[20%] -right-[5%] w-[35%] h-[35%] rounded-full bg-accent/10 blur-[100px]"
-      ></div>
-      <div
-        class="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-primary-600/5 blur-[150px]"
-      ></div>
-    </div>
+    <!-- Background Animation Container -->
+    <div id="bg-animation-container" class="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-40 dark:opacity-20"></div>
 
     <!-- Header -->
     <header
@@ -922,6 +918,9 @@
         // Initialize bookmark UI
         updateBookmarkUI();
 
+        // 0. Initialize Background Animation
+        initBackgroundAnimation();
+
         // 1. First Load Placeholders (Required for images)
         await fetchPlaceholders();
 
@@ -947,6 +946,59 @@
 
         // 3. Fetch Fresh Data only if needed
         await fetchNews();
+      }
+
+      function initBackgroundAnimation() {
+          const container = document.getElementById('bg-animation-container');
+          const shapeCount = 12;
+          const colors = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
+          
+          for (let i = 0; i < shapeCount; i++) {
+              const shape = document.createElement('div');
+              shape.className = 'bg-shape';
+              
+              // Random properties
+              const size = Math.random() * 300 + 200;
+              const color = colors[Math.floor(Math.random() * colors.length)];
+              const shapeType = Math.floor(Math.random() * 3); // 0: circle, 1: square, 2: rectangle
+              
+              shape.style.width = `${size}px`;
+              shape.style.height = shapeType === 2 ? `${size * 0.6}px` : `${size}px`;
+              shape.style.backgroundColor = color;
+              shape.style.left = `${Math.random() * 100}%`;
+              shape.style.top = `${Math.random() * 100}%`;
+              
+              if (shapeType === 0) {
+                  shape.style.borderRadius = '50%';
+              } else if (shapeType === 1) {
+                  shape.style.borderRadius = '24px';
+              } else {
+                  shape.style.borderRadius = '12px';
+              }
+              
+              container.appendChild(shape);
+              
+              // Animate
+              gsap.to(shape, {
+                  x: `+=${Math.random() * 200 - 100}`,
+                  y: `+=${Math.random() * 200 - 100}`,
+                  rotation: Math.random() * 360,
+                  duration: Math.random() * 10 + 10,
+                  repeat: -1,
+                  yoyo: true,
+                  ease: "none"
+              });
+
+              // Subtle secondary drift
+              gsap.to(shape, {
+                x: `+=${Math.random() * 100 - 50}`,
+                y: `+=${Math.random() * 100 - 50}`,
+                duration: Math.random() * 5 + 5,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+              });
+          }
       }
 
       window.addEventListener("DOMContentLoaded", init);
