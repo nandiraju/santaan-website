@@ -38,53 +38,34 @@
     }
     </script>
 
+    <!-- Resource Preconnects -->
+    <link rel="preconnect" href="https://api.unsplash.com" crossorigin />
+    <link rel="preconnect" href="https://us-central1-nandiraju-api.cloudfunctions.net" crossorigin />
+    <link rel="preconnect" href="https://api.newsdatahub.com" crossorigin />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
+      media="print" onload="this.media='all'"
     />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    </noscript>
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#fdf2f8",
-                100: "#fce7f3",
-                200: "#fbcfe8",
-                300: "#f9a8d4",
-                400: "#f472b6",
-                500: "#ec4899",
-                600: "#db2777",
-                700: "#be185d",
-                800: "#9d174d",
-                900: "#831843",
-              },
-              accent: "#8b5cf6",
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              display: ["Outfit", "sans-serif"],
-            },
-            backdropBlur: {
-              xs: "2px",
-            },
-          },
-        },
-      };
-    </script>
+    <link rel="stylesheet" href="output.css" />
 
     <!-- GSAP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
+      html {
+        scroll-behavior: smooth;
+      }
       body {
         font-family: "Inter", sans-serif;
         overflow-x: hidden;
@@ -93,6 +74,7 @@
         transition:
           background-color 0.3s ease,
           color 0.3s ease;
+        -webkit-overflow-scrolling: touch;
       }
       .dark body {
         background-color: #030712;
@@ -108,6 +90,13 @@
       .dark .glass {
         background: rgba(17, 24, 39, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      }
+      .dark .news-card-hover:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow:
+          0 25px 50px -12px rgba(0,0,0,0.8),
+          0 10px 15px -3px rgba(0,0,0,0.4);
       }
 
       .card-gradient {
@@ -252,20 +241,20 @@
             </div>
             <span
               class="font-display font-bold text-xl tracking-tight hidden sm:block"
-              >Santaan <span class="gradient-text">News</span></span
+              >Santaan <span class="gradient-text">Trending</span></span
             >
           </div>
 
           <div class="flex items-center gap-3"></div>
             <button
               id="view-bookmarks"
-              class="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm border border-gray-200 dark:border-gray-700"
+              class="group flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:scale-[1.02] active:scale-95 transition-all duration-200 shadow-sm border border-gray-200 dark:border-gray-700"
             >
-              <svg class="w-5 h-5 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
               </svg>
-              <span class="text-sm font-bold hidden sm:block">My Bookmarks</span>
-              <span id="bookmark-count-badge" class="hidden ml-1 px-2 py-0.5 rounded-full bg-primary-500 text-white text-[10px] font-black">0</span>
+              <span class="text-xs sm:text-sm font-bold whitespace-nowrap">My Bookmarks</span>
+              <span id="bookmark-count-badge" class="hidden ml-1 px-1.5 py-0.5 rounded-full bg-primary-500 text-white text-[10px] font-black leading-none flex items-center justify-center">0</span>
             </button>
 
 
@@ -703,8 +692,8 @@
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
                     <div class="relative h-56 overflow-hidden bg-gray-100">
                         <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
-                        <button onclick="event.stopPropagation(); toggleBookmark(${index})" class="absolute top-4 right-4 p-3 rounded-full backdrop-blur-md bg-white/20 border border-white/30 text-white hover:scale-110 active:scale-95 transition-all shadow-xl z-20" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
-                            <svg class="w-5 h-5 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
+                        <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="absolute top-4 right-4 p-3 rounded-full backdrop-blur-md bg-white/20 border border-white/30 text-white hover:scale-110 active:scale-95 transition-all shadow-xl z-20" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
+                            <svg class="w-5 h-5 transition-colors duration-300 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
                         </button>
@@ -738,7 +727,7 @@
             `;
       }
 
-      function renderArticles() {
+      function renderArticles(skipAnimation = false) {
         const container = document.getElementById("news-container");
         const countEl = document.getElementById("article-count");
         const displayList = currentView === 'all' ? articles : bookmarks;
@@ -761,24 +750,26 @@
           })
           .join("");
 
-        // Reset ScrollTrigger
-        ScrollTrigger.getAll().forEach(t => t.kill());
+        if (!skipAnimation) {
+          // Reset ScrollTrigger
+          ScrollTrigger.getAll().forEach(t => t.kill());
 
-        // Simple Staggered Animation for visible cards
-        gsap.from(".news-card", {
-          opacity: 0,
-          y: 20,
-          duration: 0.6,
-          stagger: {
-             amount: 0.8,
-             grid: "auto",
-             from: "start"
-          },
-          ease: "power2.out",
-          clearProps: "all" // Ensure we don't leave opacity: 0
-        });
+          // Simple Staggered Animation for visible cards
+          gsap.from(".news-card", {
+            opacity: 0,
+            y: 20,
+            duration: 0.6,
+            stagger: {
+               amount: 0.8,
+               grid: "auto",
+               from: "start"
+            },
+            ease: "power2.out",
+            clearProps: "all" // Ensure we don't leave opacity: 0
+          });
 
-        ScrollTrigger.refresh();
+          ScrollTrigger.refresh();
+        }
       }
 
       // Side Panel Logic
@@ -843,19 +834,55 @@
           }
       }
 
-      function toggleBookmark(index) {
+      function toggleBookmark(event, index) {
           const article = currentView === 'all' ? articles[index] : bookmarks[index];
           const bIdx = bookmarks.findIndex(b => b.url === article.url);
           
+          let isBookmarked = false;
           if (bIdx > -1) {
               bookmarks.splice(bIdx, 1);
           } else {
               bookmarks.push(article);
+              isBookmarked = true;
           }
           
           localStorage.setItem('santaan_bookmarks', JSON.stringify(bookmarks));
           updateBookmarkUI();
-          renderArticles();
+
+          if (event && event.currentTarget) {
+              const svg = event.currentTarget.querySelector('svg');
+              if (isBookmarked) {
+                  svg.classList.add('fill-primary-500', 'text-primary-500');
+                  svg.classList.remove('fill-transparent', 'text-white');
+                  event.currentTarget.title = 'Remove';
+                  gsap.fromTo(event.currentTarget, 
+                    { scale: 0.8 }, 
+                    { scale: 1, duration: 0.4, ease: "back.out(1.5)" }
+                  );
+              } else {
+                  svg.classList.add('fill-transparent', 'text-white');
+                  svg.classList.remove('fill-primary-500', 'text-primary-500');
+                  event.currentTarget.title = 'Bookmark';
+              }
+          }
+
+          if (currentView === 'bookmarks' && !isBookmarked) {
+              if (event && event.currentTarget) {
+                  const card = event.currentTarget.closest('.news-card');
+                  if (card) {
+                      gsap.to(card, {
+                          opacity: 0,
+                          scale: 0.9,
+                          duration: 0.3,
+                          onComplete: () => renderArticles(true)
+                      });
+                  } else {
+                      renderArticles(true);
+                  }
+              } else {
+                  renderArticles(true);
+              }
+          }
       }
 
       function updateBookmarkUI() {
