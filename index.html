@@ -419,6 +419,30 @@
       </div>
     </main>
 
+    <!-- Side Panel -->
+    <div id="side-panel-overlay" class="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="side-panel" class="fixed top-0 right-0 h-full w-full sm:w-[500px] glass z-[101] shadow-2xl translate-x-full transition-transform duration-500 ease-out flex flex-col border-l border-white/20">
+        <div class="p-6 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
+            <h3 class="font-display font-bold text-xl">Article Details</h3>
+            <button id="close-panel" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="flex-grow overflow-y-auto p-8">
+            <div id="panel-content" class="space-y-6">
+                <!-- Data will be injected here -->
+            </div>
+        </div>
+
+        <div class="p-8 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
+            <a id="panel-source-url" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary-500/25">
+                Read Full Article
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+    </div>
+
     <footer class="py-12 border-t border-gray-100 dark:border-gray-800">
       <div class="max-w-7xl mx-auto px-4 text-center">
         <p class="text-gray-500 text-sm">
@@ -659,7 +683,7 @@
         const img = article.imageUrl || getPlaceholder();
 
         return `
-                <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5" style="opacity: 1; transform: translateY(0);">
+                <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
                     <div class="relative h-56 overflow-hidden bg-gray-100">
                         <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
                     </div>
@@ -670,7 +694,7 @@
                         </div>
                         
                         <h2 class="text-xl font-display font-bold mb-4 leading-tight text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500 transition-colors">
-                            <a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a>
+                            ${article.title}
                         </h2>
                         
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-3 leading-relaxed">
@@ -678,12 +702,12 @@
                         </p>
                         
                         <div class="mt-auto pt-6 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
-                            <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-                                Read Article
+                            <span class="group inline-flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                                View Details
                                 <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                            </a>
+                            </span>
                             
-                            <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-primary-500 transition-colors" title="Share">
+                            <button onclick="event.stopPropagation(); shareArticle(${index})" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-primary-500 transition-colors" title="Share">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                             </button>
                         </div>
@@ -726,6 +750,68 @@
         });
 
         ScrollTrigger.refresh();
+      }
+
+      // Side Panel Logic
+      const sidePanel = document.getElementById("side-panel");
+      const overlay = document.getElementById("side-panel-overlay");
+      const closeBtn = document.getElementById("close-panel");
+
+      function openPanel(index) {
+        const article = articles[index];
+        const content = document.getElementById("panel-content");
+        const sourceUrl = document.getElementById("panel-source-url");
+        
+        content.innerHTML = `
+            <img src="${article.imageUrl || getPlaceholder()}" class="w-full h-64 object-cover rounded-2xl shadow-lg mb-6" />
+            <div class="flex items-center justify-between">
+                <span class="text-primary-500 font-bold text-sm uppercase">${article.publisher}</span>
+                <span class="text-gray-400 text-xs">${formatDate(article.publishedAt)}</span>
+            </div>
+            <h2 class="text-2xl font-display font-black leading-tight text-gray-800 dark:text-white">${article.title}</h2>
+            <div class="prose prose-sm dark:prose-invert max-w-none">
+                <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+                    ${article.summary || "Detailed highlights of this breakthrough are being summarized. Please visit the primary source for the full clinical context."}
+                </p>
+                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 mt-8">
+                    <p class="text-xs text-gray-400 italic">This news item was aggregated and normalized by Santaan's intelligence engine to provide the most relevant updates in IVF and reproductive science.</p>
+                </div>
+            </div>
+        `;
+        
+        sourceUrl.href = article.url;
+
+        // Animate Panel
+        overlay.classList.remove("hidden");
+        gsap.to(overlay, { opacity: 1, duration: 0.3 });
+        gsap.to(sidePanel, { x: 0, duration: 0.5, ease: "power3.out" });
+        document.body.style.overflow = "hidden";
+      }
+
+      function closePanelFunc() {
+        gsap.to(overlay, { 
+            opacity: 0, 
+            duration: 0.3, 
+            onComplete: () => overlay.classList.add("hidden") 
+        });
+        gsap.to(sidePanel, { x: "100%", duration: 0.4, ease: "power3.in" });
+        document.body.style.overflow = "";
+      }
+
+      closeBtn.addEventListener("click", closePanelFunc);
+      overlay.addEventListener("click", closePanelFunc);
+
+      function shareArticle(index) {
+          const article = articles[index];
+          if (navigator.share) {
+              navigator.share({
+                  title: article.title,
+                  text: article.summary,
+                  url: article.url
+              });
+          } else {
+              alert("URL copied to clipboard: " + article.url);
+          }
       }
 
       // Header Scroll Effect
