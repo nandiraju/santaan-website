@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -88,7 +88,7 @@
       body {
         font-family: "Inter", sans-serif;
         overflow-x: hidden;
-        background-color: #ffffff;
+        background-color: #f5f5f5;
         color: #111827;
         transition:
           background-color 0.3s ease,
@@ -260,21 +260,6 @@
             >
           </div>
 
-          <div class="flex items-center gap-4">
-            <div
-              id="status-badge"
-              class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-medium border border-green-500/20"
-            >
-              <span class="relative flex h-2 w-2">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
-                ></span>
-                <span
-                  class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
-                ></span>
-              </span>
-              Live Feed
-            </div>
 
             <button
               id="theme-toggle"
@@ -339,24 +324,6 @@
         class="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-gray-100 dark:border-gray-800"
       >
         <div class="flex items-center gap-4">
-          <span
-            class="text-sm font-semibold uppercase tracking-wider text-gray-400"
-            >Sources</span
-          >
-          <div class="flex items-center gap-2">
-            <span
-              class="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-500 text-xs font-bold border border-blue-500/20"
-              >Bing News</span
-            >
-            <span
-              class="px-3 py-1 rounded-lg bg-green-500/10 text-green-500 text-xs font-bold border border-green-500/20"
-              >Google News</span
-            >
-            <span
-              class="px-3 py-1 rounded-lg bg-purple-500/10 text-purple-500 text-xs font-bold border border-purple-500/20"
-              >NewsDataHub</span
-            >
-          </div>
         </div>
         <div class="text-sm text-gray-500 font-medium">
           Showing
@@ -467,7 +434,7 @@
         NEWSDATAHUB_KEY: "ndh_h2jQvFz3dQp1TDOmMGX-dogdS4prXtJycnCbU3-gjMI",
         ENDPOINTS: {
           UNSPLASH:
-            "https://api.unsplash.com/search/photos?page=1&query=IVF,infertility,surrogacy&per_page=20",
+            "https://api.unsplash.com/search/photos?page=1&query=parents+children+family+infertility&per_page=20",
           BING: "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=bing&q=IVF+infertility+surrogacy",
           GOOGLE:
             "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=goolge&q=IVF+infertility+surrogacy",
@@ -696,16 +663,10 @@
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 opacity-0">
                     <div class="relative h-56 overflow-hidden">
                         <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
-                        <div class="absolute top-4 left-4">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${sourceColors[article.source] || "bg-gray-500/10 text-gray-500"} border backdrop-blur-md">
-                                ${article.source}
-                            </span>
-                        </div>
                     </div>
                     
                     <div class="p-8 flex flex-col flex-grow">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-bold text-primary-500 uppercase tracking-tight">${article.publisher}</span>
+                        <div class="flex items-center justify-end mb-4">
                             <span class="text-[11px] text-gray-400 font-medium">${formatDate(article.publishedAt)}</span>
                         </div>
                         
