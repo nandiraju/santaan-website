@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Santaan News | Global IVF, Infertility & Surrogacy Insights</title>
+    <meta name="description" content="Access real-time global news on IVF breakthroughs, surrogacy legislation, and infertility research. Your premium source for fertility innovation insights.">
+    <meta name="keywords" content="IVF news, infertility breakthroughs, surrogacy updates, fertility research, Santaan News, reproductive health, clinical embryology">
+    <link rel="canonical" href="https://santaan.news">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://santaan.news">
+    <meta property="og:title" content="Santaan News | Global IVF & Infertility Insights">
+    <meta property="og:description" content="Stay updated with the latest breakthroughs in IVF and surrogacy. Real-time insights from global clinical and news sources.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?q=80&w=1200">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://santaan.news">
+    <meta property="twitter:title" content="Santaan News | Global IVF & Infertility Insights">
+    <meta property="twitter:description" content="Stay updated with the latest breakthroughs in IVF and surrogacy. Real-time insights from global clinical and news sources.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?q=80&w=1200">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "NewsMediaOrganization",
+      "name": "Santaan News",
+      "url": "https://santaan.news",
+      "logo": "https://santaan.news/logo.png",
+      "description": "Premium news aggregator for IVF, Infertility, and Surrogacy breakthroughs.",
+      "sameAs": [
+        "https://twitter.com/santaan",
+        "https://linkedin.com/company/santaan"
+      ]
+    }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#fdf2f8",
+                100: "#fce7f3",
+                200: "#fbcfe8",
+                300: "#f9a8d4",
+                400: "#f472b6",
+                500: "#ec4899",
+                600: "#db2777",
+                700: "#be185d",
+                800: "#9d174d",
+                900: "#831843",
+              },
+              accent: "#8b5cf6",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "sans-serif"],
+            },
+            backdropBlur: {
+              xs: "2px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        overflow-x: hidden;
+        background-color: #ffffff;
+        color: #111827;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+      .dark body {
+        background-color: #030712;
+        color: #f9fafb;
+      }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .dark .glass {
+        background: rgba(17, 24, 39, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .card-gradient {
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.05) 0%,
+          rgba(139, 92, 246, 0.05) 100%
+        );
+      }
+      .dark .card-gradient {
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.1) 0%,
+          rgba(139, 92, 246, 0.1) 100%
+        );
+      }
+
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(236, 72, 153, 0.5);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(236, 72, 153, 0.8);
+      }
+
+      .news-card-hover {
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .news-card-hover:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .gradient-text {
+        background: linear-gradient(to right, #ec4899, #8b5cf6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* Loader */
+      .loader-dots div {
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      }
+      .loader-dots div:nth-child(1) {
+        left: 8px;
+        animation: loader-dots1 0.6s infinite;
+      }
+      .loader-dots div:nth-child(2) {
+        left: 8px;
+        animation: loader-dots2 0.6s infinite;
+      }
+      .loader-dots div:nth-child(3) {
+        left: 32px;
+        animation: loader-dots2 0.6s infinite;
+      }
+      .loader-dots div:nth-child(4) {
+        left: 56px;
+        animation: loader-dots3 0.6s infinite;
+      }
+      @keyframes loader-dots1 {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes loader-dots3 {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      @keyframes loader-dots2 {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(24px, 0);
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div
+        class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary-500/10 blur-[120px]"
+      ></div>
+      <div
+        class="absolute top-[20%] -right-[5%] w-[35%] h-[35%] rounded-full bg-accent/10 blur-[100px]"
+      ></div>
+      <div
+        class="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-primary-600/5 blur-[150px]"
+      ></div>
+    </div>
+
+    <!-- Header -->
+    <header
+      id="header"
+      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav
+          class="glass rounded-2xl px-6 py-3 flex items-center justify-between shadow-lg"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent rounded-xl flex items-center justify-center shadow-lg transform rotate-3"
+            >
+              <span class="text-white font-display font-bold text-xl">S</span>
+            </div>
+            <span
+              class="font-display font-bold text-xl tracking-tight hidden sm:block"
+              >Santaan <span class="gradient-text">News</span></span
+            >
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div
+              id="status-badge"
+              class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-medium border border-green-500/20"
+            >
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
+                ></span>
+              </span>
+              Live Feed
+            </div>
+
+            <button
+              id="theme-toggle"
+              class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:scale-110 active:scale-95 transition-all duration-200 shadow-sm border border-gray-200 dark:border-gray-700"
+              aria-label="Toggle Theme"
+            >
+              <svg
+                id="sun-icon"
+                class="hidden w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M7.757 6.343l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
+                />
+              </svg>
+              <svg
+                id="moon-icon"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <!-- Hero Section -->
+      <div id="hero" class="mb-16 text-center sm:text-left">
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-display font-black mb-6 tracking-tight leading-tight"
+        >
+          Latest Insights on <br class="hidden sm:block" />
+          <span class="gradient-text">Fertility & Innovation.</span>
+        </h1>
+        <p
+          class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed"
+        >
+          Stay updated with breakthroughs in IVF, surrogacy news, and clinical
+          research. We aggregate real-time data from global sources to keep you
+          informed.
+        </p>
+      </div>
+
+      <!-- Filters/Stats -->
+      <div
+        id="stats-bar"
+        class="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-gray-100 dark:border-gray-800"
+      >
+        <div class="flex items-center gap-4">
+          <span
+            class="text-sm font-semibold uppercase tracking-wider text-gray-400"
+            >Sources</span
+          >
+          <div class="flex items-center gap-2">
+            <span
+              class="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-500 text-xs font-bold border border-blue-500/20"
+              >Bing News</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-green-500/10 text-green-500 text-xs font-bold border border-green-500/20"
+              >Google News</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-purple-500/10 text-purple-500 text-xs font-bold border border-purple-500/20"
+              >NewsDataHub</span
+            >
+          </div>
+        </div>
+        <div class="text-sm text-gray-500 font-medium">
+          Showing
+          <span id="article-count" class="text-primary-500 font-bold">...</span>
+          articles
+        </div>
+      </div>
+
+      <!-- News Grid Skeleton -->
+      <div
+        id="news-container"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
+        <!-- Skeletons will be replaced by cards -->
+        <div
+          class="skeleton-card h-96 glass rounded-3xl overflow-hidden shadow-sm animate-pulse"
+        >
+          <div class="h-48 bg-gray-200 dark:bg-gray-800"></div>
+          <div class="p-6 space-y-4">
+            <div class="h-4 w-1/4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-6 w-full bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-4 w-5/6 bg-gray-200 dark:bg-gray-800 rounded"></div>
+          </div>
+        </div>
+        <div
+          class="skeleton-card h-96 glass rounded-3xl overflow-hidden shadow-sm animate-pulse hidden md:block"
+        >
+          <div class="h-48 bg-gray-200 dark:bg-gray-800"></div>
+          <div class="p-6 space-y-4">
+            <div class="h-4 w-1/4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-6 w-full bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-4 w-5/6 bg-gray-200 dark:bg-gray-800 rounded"></div>
+          </div>
+        </div>
+        <div
+          class="skeleton-card h-96 glass rounded-3xl overflow-hidden shadow-sm animate-pulse hidden lg:block"
+        >
+          <div class="h-48 bg-gray-200 dark:bg-gray-800"></div>
+          <div class="p-6 space-y-4">
+            <div class="h-4 w-1/4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-6 w-full bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="h-4 w-5/6 bg-gray-200 dark:bg-gray-800 rounded"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Initial Loader -->
+      <div
+        id="loader"
+        class="flex flex-col items-center justify-center py-20 hidden"
+      >
+        <div class="loader-dots relative inline-block w-20 h-20">
+          <div class="absolute top-8 w-3 h-3 rounded-full bg-primary-500"></div>
+          <div class="absolute top-8 w-3 h-3 rounded-full bg-primary-500"></div>
+          <div class="absolute top-8 w-3 h-3 rounded-full bg-primary-500"></div>
+          <div class="absolute top-8 w-3 h-3 rounded-full bg-primary-500"></div>
+        </div>
+        <p class="mt-4 text-gray-500 font-medium animate-pulse">
+          Syncing latest global feeds...
+        </p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-state" class="hidden py-20 text-center">
+        <div
+          class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mb-6"
+        >
+          <svg
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Connection Issues</h3>
+        <p class="text-gray-500 max-w-sm mx-auto mb-8">
+          We're having trouble reaching our news providers. Please try again in
+          a moment.
+        </p>
+        <button
+          onclick="location.reload()"
+          class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary-500/25"
+        >
+          Retry Connection
+        </button>
+      </div>
+    </main>
+
+    <footer class="py-12 border-t border-gray-100 dark:border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="text-gray-500 text-sm">
+          © 2026 Santaan Fertility Centre. Powered by Orchestrated Intelligence.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // CONFIGURATION
+      const CONFIG = {
+        UNSPLASH_CLIENT_ID: "WztAjjff7Z9mPXfGCNwmu8qPlVOIjuZaDErzoSy-5Tw",
+        NEWSDATAHUB_KEY: "ndh_h2jQvFz3dQp1TDOmMGX-dogdS4prXtJycnCbU3-gjMI",
+        ENDPOINTS: {
+          UNSPLASH:
+            "https://api.unsplash.com/search/photos?page=1&query=IVF,infertility,surrogacy&per_page=20",
+          BING: "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=bing&q=IVF+infertility+surrogacy",
+          GOOGLE:
+            "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=goolge&q=IVF+infertility+surrogacy",
+          NEWSDATAHUB:
+            "https://api.newsdatahub.com/v1/news?q=IVF%2Cinfertlity%2Csurrogacy&deduplicate=true&per_page=20",
+        },
+      };
+
+      // STATE
+      let placeholders = [];
+      let articles = [];
+      let placeholderIndex = 0;
+
+      // THEME LOGIC
+      const themeToggle = document.getElementById("theme-toggle");
+      const sunIcon = document.getElementById("sun-icon");
+      const moonIcon = document.getElementById("moon-icon");
+
+      function updateTheme() {
+        if (
+          localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+          sunIcon.classList.remove("hidden");
+          moonIcon.classList.add("hidden");
+        } else {
+          document.documentElement.classList.remove("dark");
+          sunIcon.classList.add("hidden");
+          moonIcon.classList.remove("hidden");
+        }
+      }
+
+      themeToggle.addEventListener("click", () => {
+        if (document.documentElement.classList.contains("dark")) {
+          localStorage.theme = "light";
+        } else {
+          localStorage.theme = "dark";
+        }
+
+        // GSAP Transition on theme change
+        gsap.to("body", {
+          opacity: 0.8,
+          duration: 0.1,
+          onComplete: () => {
+            updateTheme();
+            gsap.to("body", { opacity: 1, duration: 0.2 });
+          },
+        });
+      });
+
+      // DATA FETCHING & NORMALIZATION
+      async function fetchPlaceholders() {
+        try {
+          const response = await fetch(
+            `${CONFIG.ENDPOINTS.UNSPLASH}&client_id=${CONFIG.UNSPLASH_CLIENT_ID}`,
+          );
+          const data = await response.json();
+          placeholders = data.results.map((img) => img.urls.regular);
+          console.log("Placeholders loaded:", placeholders.length);
+        } catch (err) {
+          console.error("Unsplash fetch failed, using fallbacks");
+          placeholders = [
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=800",
+          ];
+        }
+      }
+
+      function getPlaceholder() {
+        if (placeholders.length === 0) return "";
+        const img = placeholders[placeholderIndex];
+        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+        return img;
+      }
+
+      async function fetchNews() {
+        console.log("Fetching news...");
+        document.getElementById("loader").classList.remove("hidden");
+        // Only add opacity if we don't have cached articles displayed
+        if (articles.length === 0) {
+            document.getElementById("news-container").classList.add("opacity-40");
+        }
+
+        try {
+          const results = await Promise.allSettled([
+            fetch(CONFIG.ENDPOINTS.BING).then((r) => r.json()),
+            fetch(CONFIG.ENDPOINTS.GOOGLE).then((r) => r.json()),
+            fetch(CONFIG.ENDPOINTS.NEWSDATAHUB, {
+              headers: {
+                "X-API-Key": CONFIG.NEWSDATAHUB_KEY,
+              },
+            }).then((r) => r.json()),
+          ]);
+
+          console.log("Raw results:", results);
+
+          const [bingRes, googleRes, hubRes] = results;
+          let normalized = [];
+
+          // Normalize Bing
+          if (bingRes.status === "fulfilled") {
+            const data = bingRes.value;
+            const items = Array.isArray(data) ? data : data.value || data.news || [];
+            console.log("Bing items found:", items.length);
+            items.forEach((item) => {
+              normalized.push({
+                id: item.url || item.link || item.name || item.title,
+                title: item.name || item.title,
+                summary: item.description || item.content || "",
+                url: item.url || item.link,
+                source: "bing",
+                publisher: item.provider?.[0]?.name || item.source || "Bing News",
+                publishedAt: item.datePublished || item.pubDate || item.publishedAt,
+                imageUrl: item.image?.thumbnail?.contentUrl || item.image || "",
+              });
+            });
+          }
+
+          // Normalize Google
+          if (googleRes.status === "fulfilled") {
+            const data = googleRes.value;
+            const items = Array.isArray(data) ? data : data.news || data.value || [];
+            console.log("Google items found:", items.length);
+            items.forEach((item) => {
+              normalized.push({
+                id: item.link || item.url || item.title,
+                title: item.title || item.name,
+                summary: item.description || item.content || "",
+                url: item.link || item.url,
+                source: "google",
+                publisher: item.source || "Google News",
+                publishedAt: item.pubDate || item.publishedAt || item.datePublished,
+                imageUrl: item.image || "",
+              });
+            });
+          }
+
+          // Normalize NewsDataHub
+          if (hubRes.status === "fulfilled") {
+            const data = hubRes.value;
+            const items = data.results || (Array.isArray(data) ? data : []);
+            console.log("Hub items found:", items.length);
+            items.forEach((item) => {
+              normalized.push({
+                id: item.url || item.link || item.title,
+                title: item.title,
+                summary: item.description || item.content || "",
+                url: item.url || item.link,
+                source: "newsdatahub",
+                publisher: item.source_id || "News Hub",
+                publishedAt: item.pubDate || item.published_at,
+                imageUrl: item.image_url || "",
+              });
+            });
+          }
+
+          // Deduplicate by URL
+          const seenUrls = new Set();
+          const newArticles = normalized.filter((article) => {
+            if (!article.url || !article.title) return false;
+            const url = article.url
+              .split("?")[0]
+              .toLowerCase()
+              .replace(/\/$/, "");
+            if (seenUrls.has(url)) return false;
+            seenUrls.add(url);
+            return true;
+          });
+
+          // Sort by date (newest first)
+          newArticles.sort((a, b) => {
+            const dateA = new Date(a.publishedAt || 0);
+            const dateB = new Date(b.publishedAt || 0);
+            return dateB - dateA;
+          });
+
+          // Check if articles actually changed before updating UI/Cache
+          if (JSON.stringify(newArticles) !== JSON.stringify(articles)) {
+              articles = newArticles;
+              localStorage.setItem('santaan_news_cache', JSON.stringify(articles));
+              localStorage.setItem('santaan_news_timestamp', Date.now());
+              renderArticles();
+              console.log("Deduplicated particles refreshed:", articles.length);
+          } else {
+              console.log("No new articles found, cache is up to date.");
+          }
+
+        } catch (err) {
+          console.error("Global fetch error:", err);
+          if (articles.length === 0) { // Only show error if we have no cache
+              document.getElementById("error-state").classList.remove("hidden");
+              document.getElementById("news-container").classList.add("hidden");
+          }
+        } finally {
+          document.getElementById("loader").classList.add("hidden");
+          document.getElementById("news-container").classList.remove("opacity-40");
+        }
+      }
+
+      function formatDate(dateStr) {
+        try {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+        } catch (e) {
+          return dateStr;
+        }
+      }
+
+      function createCard(article, index) {
+        const sourceColors = {
+          bing: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+          google: "bg-green-500/10 text-green-500 border-green-500/20",
+          newsdatahub: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+        };
+
+        const img = article.imageUrl || getPlaceholder();
+
+        return `
+                <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 opacity-0">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
+                        <div class="absolute top-4 left-4">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${sourceColors[article.source] || "bg-gray-500/10 text-gray-500"} border backdrop-blur-md">
+                                ${article.source}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 flex flex-col flex-grow">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-primary-500 uppercase tracking-tight">${article.publisher}</span>
+                            <span class="text-[11px] text-gray-400 font-medium">${formatDate(article.publishedAt)}</span>
+                        </div>
+                        
+                        <h2 class="text-xl font-display font-bold mb-4 leading-tight text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500 transition-colors">
+                            <a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a>
+                        </h2>
+                        
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-3 leading-relaxed">
+                            ${article.summary || "No summary available for this article."}
+                        </p>
+                        
+                        <div class="mt-auto pt-6 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
+                            <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                                Read Article
+                                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                            
+                            <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-primary-500 transition-colors" title="Share">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+      }
+
+      function renderArticles() {
+        const container = document.getElementById("news-container");
+        const countEl = document.getElementById("article-count");
+
+        if (articles.length === 0) {
+          container.innerHTML =
+            '<div class="col-span-full py-20 text-center text-gray-500">No articles found. Check back later.</div>';
+          countEl.textContent = "0";
+          return;
+        }
+
+        countEl.textContent = articles.length;
+        container.innerHTML = articles
+          .map((article, idx) => createCard(article, idx))
+          .join("");
+
+        // GSAP Entrance Animation
+        gsap.to(".news-card", {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+          startAt: { y: 40 },
+        });
+
+        // Scroll animations for lazy reveal
+        gsap.utils.toArray(".news-card").forEach((card, i) => {
+          if (i > 6) {
+            // Only for cards not in initial viewport
+            gsap.from(card, {
+              scrollTrigger: {
+                trigger: card,
+                start: "top bottom-=50px",
+                toggleActions: "play none none none",
+              },
+              opacity: 0,
+              y: 30,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          }
+        });
+      }
+
+      // Header Scroll Effect
+      window.addEventListener("scroll", () => {
+        const header = document.getElementById("header");
+        if (window.scrollY > 50) {
+          header.querySelector("div").classList.remove("py-4");
+          header.querySelector("div").classList.add("py-2");
+        } else {
+          header.querySelector("div").classList.add("py-4");
+          header.querySelector("div").classList.remove("py-2");
+        }
+      });
+
+      // INIT
+      async function init() {
+        updateTheme();
+
+        // Animation for hero
+        gsap.from("#hero > *", {
+          opacity: 0,
+          y: 30,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power4.out",
+        });
+
+        // Load from cache for perceived performance
+        const cache = localStorage.getItem('santaan_news_cache');
+        if (cache) {
+            try {
+                articles = JSON.parse(cache);
+                console.log("Loaded from cache:", articles.length);
+                renderArticles();
+            } catch (e) {
+                console.error("Cache parse error:", e);
+            }
+        }
+
+        await fetchPlaceholders();
+        await fetchNews();
+      }
+
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
