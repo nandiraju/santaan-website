@@ -78,9 +78,7 @@
     <link rel="preload" href="output.css" as="style" />
 
     <!-- Resource Preconnects -->
-    <link rel="preconnect" href="https://us-central1-nandiraju-api.cloudfunctions.net" crossorigin />
-    <link rel="preconnect" href="https://api.newsdatahub.com" crossorigin />
-    <link rel="dns-prefetch" href="https://api.unsplash.com" />
+    <link rel="preconnect" href="https://news-service-beta.vercel.app" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
@@ -536,18 +534,22 @@
 
     <script>
       // CONFIGURATION
+      // News comes from the Santaan news-service on Vercel. All provider API keys
+      // (SerpAPI, Firecrawl, Unsplash) live server-side there — none in this page.
       const CONFIG = {
-        UNSPLASH_CLIENT_ID: "WztAjjff7Z9mPXfGCNwmu8qPlVOIjuZaDErzoSy-5Tw",
-        NEWSDATAHUB_KEY: "ndh_h2jQvFz3dQp1TDOmMGX-dogdS4prXtJycnCbU3-gjMI",
-        ENDPOINTS: {
-          UNSPLASH:
-            "https://api.unsplash.com/search/photos?page=1&query=parents+children+family+infertility&per_page=20",
-          BING: "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=bing&q=IVF+infertility+surrogacy",
-          GOOGLE:
-            "https://us-central1-nandiraju-api.cloudfunctions.net/app/news?source=goolge&q=IVF+infertility+surrogacy",
-          NEWSDATAHUB:
-            "https://api.newsdatahub.com/v1/news?q=IVF%2Cinfertlity%2Csurrogacy&deduplicate=true&per_page=20",
-        },
+        NEWS_API: "https://news-service-beta.vercel.app/api/search",
+        QUERIES: [
+          "IVF fertility treatment news",
+          "infertility research news",
+          "surrogacy law news",
+        ],
+        REQUEST_TIMEOUT_MS: 20000,
+        MAX_AGE_DAYS: 365,
+        FALLBACK_IMAGES: [
+          "https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?auto=format&fit=crop&q=80&w=800",
+          "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800",
+          "https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=800",
+        ],
       };
 
       // STATE
@@ -595,32 +597,39 @@
 
       // DATA FETCHING & NORMALIZATION
       async function fetchPlaceholders() {
-        const cache = localStorage.getItem('santaan_placeholders_cache');
-        const timestamp = localStorage.getItem('santaan_placeholders_timestamp');
-        const ONE_DAY = 24 * 60 * 60 * 1000;
-
-        if (cache && timestamp && (Date.now() - timestamp < ONE_DAY)) {
-            placeholders = JSON.parse(cache);
-            console.log("Placeholders loaded from cache");
-            return;
-        }
-
+        placeholders = CONFIG.FALLBACK_IMAGES.slice();
+        // Clear the old Unsplash-API cache from earlier versions of the site.
         try {
-          const response = await fetch(
-            `${CONFIG.ENDPOINTS.UNSPLASH}&client_id=${CONFIG.UNSPLASH_CLIENT_ID}`,
-          );
-          const data = await response.json();
-          placeholders = data.results.map((img) => img.urls.regular);
-          localStorage.setItem('santaan_placeholders_cache', JSON.stringify(placeholders));
-          localStorage.setItem('santaan_placeholders_timestamp', Date.now());
-          console.log("Placeholders loaded from API:", placeholders.length);
-        } catch (err) {
-          console.error("Unsplash fetch failed, using fallbacks");
-          placeholders = [
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?auto=format&fit=crop&q=80&w=800",
-            "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800",
-            "https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=800",
-          ];
+          localStorage.removeItem('santaan_placeholders_cache');
+          localStorage.removeItem('santaan_placeholders_timestamp');
+        } catch (e) {}
+      }
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+
+      function publisherFromUrl(url) {
+        try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return "Web"; }
+      }
+
+      async function searchNews(query) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), CONFIG.REQUEST_TIMEOUT_MS);
+        try {
+          const r = await fetch(CONFIG.NEWS_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+            signal: ctrl.signal,
+          });
+          if (!r.ok) throw new Error("news-service HTTP " + r.status);
+          const data = await r.json();
+          return Array.isArray(data.results) ? data.results : [];
+        } finally {
+          clearTimeout(timer);
         }
       }
 
@@ -648,72 +657,36 @@
         }
 
         try {
-          const results = await Promise.allSettled([
-            fetch(CONFIG.ENDPOINTS.BING).then((r) => r.json()),
-            fetch(CONFIG.ENDPOINTS.GOOGLE).then((r) => r.json()),
-            fetch(CONFIG.ENDPOINTS.NEWSDATAHUB, {
-              headers: {
-                "X-API-Key": CONFIG.NEWSDATAHUB_KEY,
-              },
-            }).then((r) => r.json()),
-          ]);
+          const results = await Promise.allSettled(CONFIG.QUERIES.map(searchNews));
+          const anySucceeded = results.some(r => r.status === "fulfilled");
+          if (!anySucceeded) throw new Error("All news queries failed");
 
-          const [bingRes, googleRes, hubRes] = results;
+          const cutoff = Date.now() - CONFIG.MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
           let normalized = [];
-
-          // Normalize Bing
-          if (bingRes.status === "fulfilled") {
-            const data = bingRes.value;
-            const items = Array.isArray(data) ? data : data.value || data.news || [];
-            items.forEach((item) => {
+          results.forEach((res) => {
+            if (res.status !== "fulfilled") return;
+            res.value.forEach((item) => {
+              if (!item || !item.url || !item.title) return;
+              const t = item.date ? new Date(item.date).getTime() : NaN;
+              if (!isNaN(t) && t < cutoff) return; // drop stale articles
               normalized.push({
-                id: item.url || item.link || item.name || item.title,
-                title: item.name || item.title,
-                summary: item.description || item.content || "",
-                url: item.url || item.link,
-                source: "bing",
-                publisher: item.provider?.[0]?.name || item.source || "Bing News",
-                publishedAt: item.datePublished || item.pubDate || item.publishedAt,
-                imageUrl: item.image?.thumbnail?.contentUrl || item.image || "",
+                id: item.url,
+                title: escapeHtml(item.title),
+                summary: escapeHtml(item.snippet || ""),
+                url: item.url,
+                source: "web",
+                publisher: escapeHtml(publisherFromUrl(item.url)),
+                publishedAt: item.date || "",
+                imageUrl: item.thumbnail || "",
               });
             });
-          }
+          });
 
-          // Normalize Google
-          if (googleRes.status === "fulfilled") {
-            const data = googleRes.value;
-            const items = Array.isArray(data) ? data : data.news || data.value || [];
-            items.forEach((item) => {
-              normalized.push({
-                id: item.link || item.url || item.title,
-                title: item.title || item.name,
-                summary: item.description || item.content || "",
-                url: item.link || item.url,
-                source: "google",
-                publisher: item.source || "Google News",
-                publishedAt: item.pubDate || item.publishedAt || item.datePublished,
-                imageUrl: item.image || "",
-              });
-            });
-          }
-
-          // Normalize NewsDataHub
-          if (hubRes.status === "fulfilled") {
-            const data = hubRes.value;
-            const items = data.results || (Array.isArray(data) ? data : []);
-            items.forEach((item) => {
-              normalized.push({
-                id: item.url || item.link || item.title,
-                title: item.title,
-                summary: item.description || item.content || "",
-                url: item.url || item.link,
-                source: "newsdatahub",
-                publisher: item.source_id || "News Hub",
-                publishedAt: item.pubDate || item.published_at,
-                imageUrl: item.image_url || "",
-              });
-            });
-          }
+          // Drop cached items from the retired providers or older than the cutoff
+          articles = articles.filter(a => {
+            const t = new Date(a.publishedAt).getTime();
+            return a.source === "web" && (isNaN(t) || t >= cutoff);
+          });
 
           const allUrls = new Set();
           const mergedArticles = [];
@@ -743,16 +716,19 @@
               localStorage.setItem('santaan_news_cache', JSON.stringify(articles));
               localStorage.setItem('santaan_news_timestamp', Date.now());
               renderArticles();
-          } else if (force) {
+          } else if (force || articles.length === 0) {
               localStorage.setItem('santaan_news_timestamp', Date.now());
               renderArticles();
           }
+          document.getElementById("error-state").classList.add("hidden");
+          document.getElementById("news-container").classList.remove("hidden");
 
         } catch (err) {
           console.error("Global fetch error:", err);
           if (articles.length === 0) {
               document.getElementById("error-state").classList.remove("hidden");
               document.getElementById("news-container").classList.add("hidden");
+              document.getElementById("article-count").textContent = "0";
           }
         } finally {
           document.getElementById("loader").classList.add("hidden");
@@ -778,6 +754,7 @@
           bing: "bg-blue-500/10 text-blue-500 border-blue-500/20",
           google: "bg-green-500/10 text-green-500 border-green-500/20",
           newsdatahub: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+          web: "bg-pink-500/10 text-pink-500 border-pink-500/20",
         };
 
         if (!article.displayImage) {
@@ -1060,6 +1037,11 @@
         await fetchPlaceholders();
 
         // 2. Load and Render from Cache IMMEDIATELY
+        if (localStorage.getItem('santaan_news_cache_v') !== '2') {
+            localStorage.removeItem('santaan_news_cache');
+            localStorage.removeItem('santaan_news_timestamp');
+            localStorage.setItem('santaan_news_cache_v', '2');
+        }
         const cachedNews = localStorage.getItem('santaan_news_cache');
         if (cachedNews) {
             try {
