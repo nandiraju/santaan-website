@@ -3,64 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DGXEGMPW13"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-DGXEGMPW13');
+    </script>
     <title>Santaan News | Global IVF, Infertility & Surrogacy Insights</title>
     <meta name="description" content="Access real-time global news on IVF breakthroughs, surrogacy legislation, and infertility research. Your premium source for fertility innovation insights.">
     <meta name="keywords" content="IVF news, infertility breakthroughs, surrogacy updates, fertility research, Santaan News, reproductive health, clinical embryology">
-    <link rel="canonical" href="https://santaan.news">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="author" content="Santaan Fertility Centre">
+    <meta name="theme-color" content="#ec4899">
+    <link rel="canonical" href="https://santaan.com/">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://santaan.news">
+    <meta property="og:url" content="https://santaan.com/">
     <meta property="og:title" content="Santaan News | Global IVF & Infertility Insights">
     <meta property="og:description" content="Stay updated with the latest breakthroughs in IVF and surrogacy. Real-time insights from global clinical and news sources.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?q=80&w=1200">
+    <meta property="og:image" content="https://santaan.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Santaan News – Global IVF, Infertility & Surrogacy Insights">
+    <meta property="og:site_name" content="Santaan News">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://santaan.news">
-    <meta property="twitter:title" content="Santaan News | Global IVF & Infertility Insights">
-    <meta property="twitter:description" content="Stay updated with the latest breakthroughs in IVF and surrogacy. Real-time insights from global clinical and news sources.">
-    <meta property="twitter:image" content="https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?q=80&w=1200">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://santaan.com/">
+    <meta name="twitter:title" content="Santaan News | Global IVF & Infertility Insights">
+    <meta name="twitter:description" content="Stay updated with the latest breakthroughs in IVF and surrogacy. Real-time insights from global clinical and news sources.">
+    <meta name="twitter:image" content="https://santaan.com/og-image.png">
+    <meta name="twitter:site" content="@santaan">
+    <meta name="twitter:creator" content="@santaan">
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "NewsMediaOrganization",
-      "name": "Santaan News",
-      "url": "https://santaan.news",
-      "logo": "https://santaan.news/logo.png",
-      "description": "Premium news aggregator for IVF, Infertility, and Surrogacy breakthroughs.",
-      "sameAs": [
-        "https://twitter.com/santaan",
-        "https://linkedin.com/company/santaan"
-      ]
-    }
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "NewsMediaOrganization",
+        "name": "Santaan News",
+        "url": "https://santaan.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://santaan.com/logo.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Premium news aggregator for IVF, Infertility, and Surrogacy breakthroughs.",
+        "sameAs": [
+          "https://twitter.com/santaan",
+          "https://linkedin.com/company/santaan"
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Santaan News",
+        "url": "https://santaan.com"
+      }
+    ]
     </script>
 
+    <!-- Critical CSS preload -->
+    <link rel="preload" href="output.css" as="style" />
+
     <!-- Resource Preconnects -->
-    <link rel="preconnect" href="https://api.unsplash.com" crossorigin />
     <link rel="preconnect" href="https://us-central1-nandiraju-api.cloudfunctions.net" crossorigin />
     <link rel="preconnect" href="https://api.newsdatahub.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.unsplash.com" />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
-    <!-- Fonts -->
+    <!-- Fonts (reduced weights: Outfit 400/600/700, Inter 400/500 only) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap"
       rel="stylesheet"
       media="print" onload="this.media='all'"
     />
     <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
     </noscript>
 
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="output.css" />
 
-    <!-- GSAP -->
+    <!-- GSAP (ScrollTrigger removed — not needed for current animations) -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
       html {
@@ -214,15 +254,54 @@
       }
       .bg-shape {
         position: absolute;
-        filter: blur(60px);
+        filter: blur(40px);
         opacity: 0.4;
+        border-radius: 50%;
         will-change: transform;
+      }
+
+      /* CSS background shapes — no JS tweens needed */
+      .bg-shape:nth-child(1){width:320px;height:320px;background:#ec4899;left:8%;top:5%;animation:drift1 20s ease-in-out infinite alternate;}
+      .bg-shape:nth-child(2){width:280px;height:220px;background:#8b5cf6;right:12%;top:15%;border-radius:24px;animation:drift2 25s ease-in-out infinite alternate;}
+      .bg-shape:nth-child(3){width:240px;height:240px;background:#3b82f6;left:60%;top:50%;animation:drift3 18s ease-in-out infinite alternate;}
+      .bg-shape:nth-child(4){width:350px;height:250px;background:#10b981;left:20%;top:70%;border-radius:12px;animation:drift4 22s ease-in-out infinite alternate;}
+      .bg-shape:nth-child(5){width:260px;height:260px;background:#f59e0b;right:5%;bottom:20%;animation:drift1 28s ease-in-out infinite alternate-reverse;}
+      .bg-shape:nth-child(6){width:200px;height:200px;background:#ec4899;left:45%;top:10%;animation:drift2 16s ease-in-out infinite alternate-reverse;}
+      .bg-shape:nth-child(7){width:300px;height:200px;background:#8b5cf6;left:2%;top:40%;border-radius:24px;animation:drift3 24s ease-in-out infinite alternate;}
+      .bg-shape:nth-child(8){width:220px;height:220px;background:#3b82f6;right:30%;bottom:5%;animation:drift4 19s ease-in-out infinite alternate-reverse;}
+
+      @keyframes drift1{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(70px,60px) rotate(180deg);}}
+      @keyframes drift2{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(-80px,50px) rotate(-140deg);}}
+      @keyframes drift3{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(60px,-80px) rotate(220deg);}}
+      @keyframes drift4{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(-60px,-60px) rotate(-200deg);}}
+
+      /* Off-screen rendering skip for news cards */
+      #news-container {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 2400px;
+      }
+
+      /* Reduce backdrop-filter cost on mobile */
+      @media (max-width: 640px) {
+        .glass {
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
       }
     </style>
   </head>
   <body class="antialiased">
-    <!-- Background Animation Container -->
-    <div id="bg-animation-container" class="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-40 dark:opacity-20"></div>
+    <!-- Background Animation Container (shapes defined in CSS, no JS tweens) -->
+    <div id="bg-animation-container" class="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-40 dark:opacity-20" aria-hidden="true">
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+      <div class="bg-shape"></div>
+    </div>
 
     <!-- Header -->
     <header
@@ -308,12 +387,14 @@
 
     <main class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <!-- Hero Section -->
+      <div id="hero" class="mb-10">
         <h1
           class="text-4xl sm:text-5xl lg:text-6xl font-display font-black mb-6 tracking-tight leading-tight"
         >
           Latest Insights on <br class="hidden sm:block" />
           <span class="gradient-text" id="hero-title">Fertility & Innovation.</span>
         </h1>
+        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
           Stay updated with breakthroughs in IVF, surrogacy news, and clinical
           research. We aggregate real-time data from global sources to keep you
           informed.
@@ -445,10 +526,10 @@
         </div>
     </div>
 
-    <footer class="py-12 border-t border-gray-100 dark:border-gray-800">
+    <footer class="py-12 border-t border-gray-100 dark:border-gray-800" itemscope itemtype="https://schema.org/WPFooter">
       <div class="max-w-7xl mx-auto px-4 text-center">
         <p class="text-gray-500 text-sm">
-          © 2026 Santaan Fertility Centre. Powered by Orchestrated Intelligence.
+          © 2026 <span itemprop="copyrightHolder">Santaan Fertility Centre</span>. Powered by Orchestrated Intelligence.
         </p>
       </div>
     </footer>
@@ -636,8 +717,8 @@
 
           const allUrls = new Set();
           const mergedArticles = [];
-          
-          [...newArticles, ...articles].forEach(article => {
+
+          [...normalized, ...articles].forEach(article => {
               if (!article.url || !article.title) return;
               const url = article.url.split("?")[0].toLowerCase().replace(/\/$/, "");
               if (!allUrls.has(url)) {
@@ -769,24 +850,14 @@
           .join("");
 
         if (!skipAnimation) {
-          // Reset ScrollTrigger
-          ScrollTrigger.getAll().forEach(t => t.kill());
-
-          // Simple Staggered Animation for visible cards
           gsap.from(".news-card", {
             opacity: 0,
             y: 20,
-            duration: 0.6,
-            stagger: {
-               amount: 0.8,
-               grid: "auto",
-               from: "start"
-            },
+            duration: 0.5,
+            stagger: { amount: 0.6, from: "start" },
             ease: "power2.out",
-            clearProps: "all" // Ensure we don't leave opacity: 0
+            clearProps: "all"
           });
-
-          ScrollTrigger.refresh();
         }
       }
 
@@ -797,6 +868,7 @@
 
       function openPanel(index) {
         const article = currentView === 'all' ? articles[index] : bookmarks[index];
+        try { if (article && window.gtag) gtag('event', 'select_content', { content_type: 'article', item_id: article.url, article_title: article.title, article_source: article.source || '' }); } catch (e) {}
         const content = document.getElementById("panel-content");
         const sourceUrl = document.getElementById("panel-source-url");
         
@@ -951,7 +1023,7 @@
       });
 
 
-      // Header Scroll Effect
+      // Header Scroll Effect (passive for no scroll-jank)
       window.addEventListener("scroll", () => {
         const header = document.getElementById("header");
         if (window.scrollY > 50) {
@@ -961,7 +1033,7 @@
           header.querySelector("div").classList.add("py-4");
           header.querySelector("div").classList.remove("py-2");
         }
-      });
+      }, { passive: true });
 
       // INIT
       async function init() {
@@ -1012,56 +1084,8 @@
       }
 
       function initBackgroundAnimation() {
-          const container = document.getElementById('bg-animation-container');
-          const shapeCount = 12;
-          const colors = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
-          
-          for (let i = 0; i < shapeCount; i++) {
-              const shape = document.createElement('div');
-              shape.className = 'bg-shape';
-              
-              // Random properties
-              const size = Math.random() * 300 + 200;
-              const color = colors[Math.floor(Math.random() * colors.length)];
-              const shapeType = Math.floor(Math.random() * 3); // 0: circle, 1: square, 2: rectangle
-              
-              shape.style.width = `${size}px`;
-              shape.style.height = shapeType === 2 ? `${size * 0.6}px` : `${size}px`;
-              shape.style.backgroundColor = color;
-              shape.style.left = `${Math.random() * 100}%`;
-              shape.style.top = `${Math.random() * 100}%`;
-              
-              if (shapeType === 0) {
-                  shape.style.borderRadius = '50%';
-              } else if (shapeType === 1) {
-                  shape.style.borderRadius = '24px';
-              } else {
-                  shape.style.borderRadius = '12px';
-              }
-              
-              container.appendChild(shape);
-              
-              // Animate
-              gsap.to(shape, {
-                  x: `+=${Math.random() * 200 - 100}`,
-                  y: `+=${Math.random() * 200 - 100}`,
-                  rotation: Math.random() * 360,
-                  duration: Math.random() * 10 + 10,
-                  repeat: -1,
-                  yoyo: true,
-                  ease: "none"
-              });
-
-              // Subtle secondary drift
-              gsap.to(shape, {
-                x: `+=${Math.random() * 100 - 50}`,
-                y: `+=${Math.random() * 100 - 50}`,
-                duration: Math.random() * 5 + 5,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-              });
-          }
+          // Shapes defined in HTML + animated via CSS keyframes.
+          // No JS tweens needed — compositor handles it natively.
       }
 
       window.addEventListener("DOMContentLoaded", init);

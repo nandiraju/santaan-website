@@ -1,0 +1,13 @@
+{
+  "name": "Santaan News",
+  "short_name": "Santaan",
+  "description": "Global IVF, infertility and surrogacy news.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f19",
+  "theme_color": "#ec4899",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
