@@ -643,11 +643,13 @@
 
       async function fetchNews(force = false) {
         const timestamp = localStorage.getItem('santaan_news_timestamp');
-        const ONE_DAY = 24 * 60 * 60 * 1000;
+        // Short browser cache: the news-service + Vercel CDN already cache for
+        // an hour, so the browser only needs to avoid refetching on every click.
+        const REFRESH_AFTER = 30 * 60 * 1000;
         
-        // Skip if we have fresh content from last 24h
-        if (!force && articles.length > 0 && timestamp && (Date.now() - timestamp < ONE_DAY)) {
-            console.log("News logic: Using 24h cache, skipping API calls.");
+        // Skip if we fetched within the last 30 minutes
+        if (!force && articles.length > 0 && timestamp && (Date.now() - timestamp < REFRESH_AFTER)) {
+            console.log("News logic: Using cached news (under 30 min old), skipping API call.");
             return;
         }
 
@@ -1032,10 +1034,10 @@
         await fetchPlaceholders();
 
         // 2. Load and Render from Cache IMMEDIATELY
-        if (localStorage.getItem('santaan_news_cache_v') !== '2') {
+        if (localStorage.getItem('santaan_news_cache_v') !== '3') {
             localStorage.removeItem('santaan_news_cache');
             localStorage.removeItem('santaan_news_timestamp');
-            localStorage.setItem('santaan_news_cache_v', '2');
+            localStorage.setItem('santaan_news_cache_v', '3');
         }
         const cachedNews = localStorage.getItem('santaan_news_cache');
         if (cachedNews) {
