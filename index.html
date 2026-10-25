@@ -279,6 +279,44 @@
         contain-intrinsic-size: 0 2400px;
       }
 
+      /* Blurred-backdrop image frame */
+      .card-img-frame {
+        transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .news-card:hover .card-img-frame {
+        transform: scale(1.06);
+      }
+      .card-img-blur {
+        position: absolute;
+        inset: -8px;
+        background-size: cover;
+        background-position: center;
+        filter: blur(18px);
+        transform: scale(1.12);
+        transition: filter 0.4s ease;
+      }
+      .card-img-scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.28);
+      }
+      .card-img-sharp {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        z-index: 2;
+      }
+      .card-img-sharp img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
+      }
+
       /* Reduce backdrop-filter cost on mobile */
       @media (max-width: 640px) {
         .glass {
@@ -763,8 +801,12 @@
         
         return `
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
-                    <div class="relative h-56 overflow-hidden bg-gray-100">
-                        <img src="${img}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy">
+                    <div class="relative h-56 overflow-hidden bg-gray-900 card-img-frame">
+                        <div class="card-img-blur" style="background-image:url('${img.replace(/'/g, "%27")}')"></div>
+                        <div class="card-img-scrim"></div>
+                        <div class="card-img-sharp">
+                            <img src="${img}" alt="${article.title}" loading="lazy">
+                        </div>
                         <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="absolute top-4 right-4 p-3 rounded-full backdrop-blur-md bg-white/20 border border-white/30 text-white hover:scale-110 active:scale-95 transition-all shadow-xl z-20" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
                             <svg class="w-5 h-5 transition-colors duration-300 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
