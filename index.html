@@ -279,42 +279,106 @@
         contain-intrinsic-size: 0 2400px;
       }
 
-      /* Blurred-backdrop image frame */
+      /* Editorial feathered image frame */
       .card-img-frame {
-        transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        position: relative;
+        overflow: hidden;
       }
-      .news-card:hover .card-img-frame {
-        transform: scale(1.06);
-      }
-      .card-img-blur {
-        position: absolute;
-        inset: -8px;
-        background-size: cover;
-        background-position: center;
-        filter: blur(18px);
-        transform: scale(1.12);
-        transition: filter 0.4s ease;
-      }
-      .card-img-scrim {
+      .card-img-aura {
         position: absolute;
         inset: 0;
-        background: rgba(0,0,0,0.28);
+        opacity: 0.26;
+        pointer-events: none;
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%);
+      }
+      .dark .card-img-aura {
+        opacity: 0.34;
       }
       .card-img-sharp {
         position: absolute;
         inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-        z-index: 2;
+        z-index: 1;
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 100%);
       }
       .card-img-sharp img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        border-radius: 14px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        /* Slightly crop edges to trim baked-in white publisher borders */
+        transform: scale(1.06);
+      }
+      .card-bookmark-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.625rem;
+        border-radius: 9999px;
+        background: rgba(17, 24, 39, 0.42);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        z-index: 20;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+      .card-bookmark-btn:hover {
+        transform: scale(1.1);
+        background: rgba(17, 24, 39, 0.6);
+      }
+      .card-bookmark-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Editorial card body & typography */
+      .card-body {
+        padding: 0.75rem 1.75rem 1.625rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        position: relative;
+        z-index: 10;
+      }
+      .card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.625rem;
+      }
+      .card-date {
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        color: #9ca3af;
+      }
+      .card-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.1875rem;
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: -0.015em;
+        margin-bottom: 0.625rem;
+        transition: color 0.2s ease;
+      }
+      .card-summary {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+      }
+      .card-footer {
+        margin-top: auto;
+        padding-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid rgba(17, 24, 39, 0.06);
+      }
+      .dark .card-footer {
+        border-top-color: rgba(255, 255, 255, 0.07);
       }
 
       /* Reduce backdrop-filter cost on mobile */
@@ -679,6 +743,17 @@
         return img;
       }
 
+      function getRandomGradient() {
+        const angle = Math.floor(Math.random() * 360);
+        const h1 = Math.floor(Math.random() * 360);
+        const h2 = (h1 + 40 + Math.floor(Math.random() * 60)) % 360;
+        const s1 = 68 + Math.floor(Math.random() * 18);
+        const s2 = 68 + Math.floor(Math.random() * 18);
+        const l1 = 38 + Math.floor(Math.random() * 16);
+        const l2 = 42 + Math.floor(Math.random() * 16);
+        return `linear-gradient(${angle}deg, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
+      }
+
       async function fetchNews(force = false) {
         const timestamp = localStorage.getItem('santaan_news_timestamp');
         // Short browser cache: the news-service + Vercel CDN already cache for
@@ -795,39 +870,41 @@
         if (!article.displayImage) {
             article.displayImage = article.imageUrl || getPlaceholder();
         }
+        if (!article.bgGradient) {
+            article.bgGradient = getRandomGradient();
+        }
         const img = article.displayImage;
 
         const isBookmarked = bookmarks.some(b => b.url === article.url);
         
         return `
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
-                    <div class="relative h-56 overflow-hidden bg-gray-900 card-img-frame">
-                        <div class="card-img-blur" style="background-image:url('${img.replace(/'/g, "%27")}')"></div>
-                        <div class="card-img-scrim"></div>
+                    <div class="relative h-56 card-img-frame">
+                        <div class="card-img-aura" style="background: ${article.bgGradient};"></div>
                         <div class="card-img-sharp">
                             <img src="${img}" alt="${article.title}" loading="lazy">
                         </div>
-                        <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="absolute top-4 right-4 p-3 rounded-full backdrop-blur-md bg-white/20 border border-white/30 text-white hover:scale-110 active:scale-95 transition-all shadow-xl z-20" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
-                            <svg class="w-5 h-5 transition-colors duration-300 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
+                        <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="card-bookmark-btn" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
+                            <svg class="w-4 h-4 transition-colors duration-300 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
                         </button>
                     </div>
                     
-                    <div class="p-8 flex flex-col flex-grow">
-                        <div class="flex items-center justify-end mb-4">
-                            <span class="text-[11px] text-gray-400 font-medium">${formatDate(article.publishedAt)}</span>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-date">${formatDate(article.publishedAt)}</span>
                         </div>
-                        
-                        <h2 class="text-xl font-display font-bold mb-4 leading-tight text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500 transition-colors">
+
+                        <h2 class="card-title text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500">
                             ${article.title}
                         </h2>
                         
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-3 leading-relaxed">
+                        <p class="card-summary text-gray-500 dark:text-gray-400 line-clamp-3">
                             ${article.summary || "No summary available for this article."}
                         </p>
                         
-                        <div class="mt-auto pt-6 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
+                        <div class="card-footer">
                             <span class="group inline-flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
                                 View Details
                                 <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
