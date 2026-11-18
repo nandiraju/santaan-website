@@ -1177,6 +1177,8 @@
         const tags = (article.topics || []).slice(0, 3)
           .map((t) => `<span class="topic-tag">${escapeHtml(topicLabel(t))}</span>`).join("");
         const relatedCount = (article.related || []).length;
+        // Cards show the publisher's own text; the AI summary is only in the side panel.
+        const cardText = article.isAiSummary ? article.publisherSummary : article.summary;
 
         return `
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
@@ -1200,9 +1202,7 @@
 
                         <h2 class="card-title text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500">${title}</h2>
 
-                        ${article.forYou ? `<div class="for-you"><strong>What this means for you <span class="ai-chip">AI</span></strong>${escapeHtml(article.forYou)}</div>` : ""}
-
-                        ${article.summary ? `<p class="card-summary text-gray-500 dark:text-gray-400 line-clamp-3">${escapeHtml(article.summary)}</p>` : ""}
+                        ${cardText ? `<p class="card-summary text-gray-500 dark:text-gray-400 line-clamp-3">${escapeHtml(cardText)}</p>` : ""}
 
                         <div class="card-footer">
                             <span class="flex flex-col gap-0.5">
