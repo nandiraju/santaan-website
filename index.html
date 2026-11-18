@@ -381,6 +381,65 @@
         border-top-color: rgba(255, 255, 255, 0.07);
       }
 
+      /* ---- Filter bar: search + topic chips ---- */
+      .filter-bar { display: flex; flex-direction: column; gap: 0.875rem; }
+      .search-wrap { position: relative; }
+      .search-wrap svg {
+        position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+        width: 1.125rem; height: 1.125rem; color: #9ca3af; pointer-events: none;
+      }
+      .search-input {
+        width: 100%; padding: 0.8rem 2.75rem 0.8rem 2.75rem; border-radius: 1rem;
+        font-size: 1rem; /* 16px: stops iOS zoom-on-focus */
+        background: rgba(255,255,255,0.85); color: inherit;
+        border: 1px solid rgba(17,24,39,0.08); outline: none;
+        transition: border-color .2s, box-shadow .2s;
+      }
+      .search-input:focus { border-color: #ec4899; box-shadow: 0 0 0 3px rgba(236,72,153,0.15); }
+      .dark .search-input { background: rgba(17,24,39,0.7); border-color: rgba(255,255,255,0.08); }
+      .search-clear {
+        position: absolute; right: 0.6rem; top: 50%; transform: translateY(-50%);
+        padding: 0.35rem 0.6rem; border-radius: 0.6rem; font-size: 0.75rem; font-weight: 700;
+        color: #6b7280; background: transparent; border: 0; cursor: pointer;
+      }
+      .search-clear:hover { color: #ec4899; }
+      .chip-row {
+        display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem;
+        scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      }
+      .chip-row::-webkit-scrollbar { display: none; }
+      .chip {
+        flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.5rem 0.95rem; border-radius: 999px; font-size: 0.8125rem; font-weight: 700;
+        background: rgba(255,255,255,0.8); color: #374151; cursor: pointer;
+        border: 1px solid rgba(17,24,39,0.08); transition: all .2s;
+      }
+      .dark .chip { background: rgba(31,41,55,0.7); color: #d1d5db; border-color: rgba(255,255,255,0.06); }
+      .chip:hover { border-color: #f472b6; }
+      .chip[aria-pressed="true"] { background: #db2777; color: #fff; border-color: #db2777; }
+      .chip .chip-count { font-size: 0.6875rem; opacity: 0.7; font-weight: 600; }
+
+      /* ---- Card topic tags, related count, plain-language box ---- */
+      .card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+      .topic-tag {
+        font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.02em;
+        padding: 0.15rem 0.55rem; border-radius: 999px;
+        background: rgba(236,72,153,0.1); color: #be185d;
+      }
+      .dark .topic-tag { background: rgba(236,72,153,0.15); color: #f9a8d4; }
+      .card-publisher { font-size: 0.75rem; font-weight: 600; color: #6b7280; }
+      .related-pill { font-size: 0.75rem; font-weight: 600; color: #8b5cf6; }
+      .for-you {
+        margin-bottom: 1rem; padding: 0.75rem 0.9rem; border-radius: 0.9rem;
+        background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15);
+        font-size: 0.875rem; line-height: 1.5; color: #374151;
+      }
+      .dark .for-you { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.25); color: #e5e7eb; }
+      .for-you strong { display: block; font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: #7c3aed; margin-bottom: 0.2rem; }
+      .dark .for-you strong { color: #c4b5fd; }
+      .ai-chip { display: inline-block; margin-left: 0.35rem; padding: 0 0.35rem; border-radius: 0.3rem; font-size: 0.625rem; letter-spacing: 0.04em; background: rgba(124,58,237,0.12); }
+      .ai-note { font-size: 0.75rem; color: #9ca3af; font-style: italic; }
+
       /* Reduce backdrop-filter cost on mobile */
       @media (max-width: 640px) {
         .glass {
@@ -504,14 +563,21 @@
       <!-- Filters/Stats -->
       <div
         id="stats-bar"
-        class="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-gray-100 dark:border-gray-800"
+        class="mb-10 pb-6 border-b border-gray-100 dark:border-gray-800"
       >
-        <div class="flex items-center gap-4">
-        </div>
-        <div class="text-sm text-gray-500 font-medium">
-          Showing
-          <span id="article-count" class="text-primary-500 font-bold">...</span>
-          articles
+        <div class="filter-bar">
+          <div class="search-wrap" role="search">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>
+            <input id="news-search" class="search-input" type="search" inputmode="search" autocomplete="off"
+              placeholder="Search: embryo, AMH, surrogacy…" aria-label="Search news" />
+            <button id="search-clear" class="search-clear hidden" type="button" aria-label="Clear search">Clear</button>
+          </div>
+          <div id="topic-chips" class="chip-row" role="group" aria-label="Filter by topic"></div>
+          <div class="text-sm text-gray-500 font-medium">
+            Showing
+            <span id="article-count" class="text-primary-500 font-bold">...</span>
+            <span id="article-count-label">articles</span>
+          </div>
         </div>
       </div>
 
@@ -644,9 +710,12 @@
           "IVF fertility treatment news",
           "infertility research news",
           "surrogacy law news",
+          "male infertility sperm news",
         ],
         REQUEST_TIMEOUT_MS: 15000,
-        MAX_AGE_DAYS: 365,
+        MAX_AGE_DAYS: 180,
+        MAX_ARTICLES: 80,
+        CACHE_VERSION: "5",
         FALLBACK_IMAGES: [
           "https://images.unsplash.com/photo-1542601906990-b4d3fb75bb44?auto=format&fit=crop&q=80&w=800",
           "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800",
@@ -654,12 +723,29 @@
         ],
       };
 
+      // TOPICS — keyword rules run on title + summary. An article can have several.
+      const TOPICS = [
+        { id: "ivf", label: "IVF", re: /\bivf\b|in[- ]vitro|embryo|blastocyst|\bicsi\b|egg[- ]freez|oocyte|frozen eggs?|donor eggs?|fertility preservation|oncofertility|fertility (treatment|clinic|care)|assisted reproduct|\bpgt\b/ },
+        { id: "male", label: "Male infertility", re: /male (infertility|fertility|factor)|sperm|semen|seminal|azoospermia|varicocele|testosterone|erectile|\bmen'?s (fertility|health)|infertil\w* (in )?(men|males)\b|(men|males) (with|and) infertil/ },
+        { id: "surrogacy", label: "Surrogacy", re: /surroga/ },
+        { id: "law", label: "Law & policy", re: /\blaws?\b|legal|legislat|\bbill\b|court|judge|regulat|\bban(ned|s)?\b|criminal|police|policy|government|\bgovt\b|congress|parliament|senate|\bmlas?\b|\bact\b|reform|funding|coverage|insurance|personhood|attorney general/ },
+        { id: "research", label: "Research", re: /\bstud(y|ies)\b|research|\btrials?\b|scientists?|journal|findings|linked to|associated with|meta-analysis|data show|new evidence/ },
+      ];
+
+      // Must mention something fertility-related to be shown at all.
+      const RELEVANT_RE = /\bivf\b|fertil|infertil|surroga|embryo|sperm|semen|egg[- ]freez|oocyte|reproduct|ovulat|pregnan|conceiv|\bicsi\b|\bpcos\b|endometriosis|miscarriage/;
+      // Pages that are not news (stock tickers, quote pages).
+      const JUNK_RE = /stock price|share price|stock quote|price, news, quote|\(nasdaq|\(nyse|stock forecast/;
+
       // STATE
       let placeholders = [];
       let articles = [];
-      let bookmarks = JSON.parse(localStorage.getItem('santaan_bookmarks') || '[]');
+      let bookmarks = [];
+      let displayed = []; // what the grid currently shows (after view + filters)
       let placeholderIndex = 0;
-      let currentView = 'all'; // 'all' or 'bookmarks'
+      let currentView = "all"; // 'all' or 'bookmarks'
+      let activeTopic = "all";
+      let searchQuery = "";
 
       // THEME LOGIC
       const themeToggle = document.getElementById("theme-toggle");
@@ -685,8 +771,6 @@
         } else {
           localStorage.theme = "dark";
         }
-
-        // GSAP Transition on theme change
         gsap.to("body", {
           opacity: 0.8,
           duration: 0.1,
@@ -697,27 +781,156 @@
         });
       });
 
-      // DATA FETCHING & NORMALIZATION
-      async function fetchPlaceholders() {
-        placeholders = CONFIG.FALLBACK_IMAGES.slice();
-        // Clear the old Unsplash-API cache from earlier versions of the site.
-        try {
-          localStorage.removeItem('santaan_placeholders_cache');
-          localStorage.removeItem('santaan_placeholders_timestamp');
-        } catch (e) {}
-      }
-
+      // ---------- TEXT HELPERS ----------
       function escapeHtml(str) {
         return String(str == null ? "" : str)
           .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
       }
 
+      // Decode HTML entities without executing anything (DOMParser doesn't run scripts).
+      function decodeEntities(str) {
+        if (!str || !/[&<]/.test(str)) return str || "";
+        try {
+          return new DOMParser().parseFromString(str, "text/html").documentElement.textContent || "";
+        } catch (e) { return str; }
+      }
+
+      function safeUrl(url) {
+        try {
+          const u = new URL(url);
+          return u.protocol === "https:" || u.protocol === "http:" ? u.href : "";
+        } catch (e) { return ""; }
+      }
+
+      function truncate(text, max) {
+        if (text.length <= max) return text;
+        const cut = text.slice(0, max);
+        const sp = cut.lastIndexOf(" ");
+        return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,;:.–-]+$/, "") + "…";
+      }
+
+      // Feeds sometimes hand us scraped page markdown (nav links, headings,
+      // "Related stories"), or the same dek twice. Keep the first real prose.
+      function cleanSnippet(raw, title) {
+        if (!raw) return "";
+        const titleKeyStr = normKey(title);
+        const seen = new Set();
+        const paras = [];
+        for (let p of String(raw).split(/\n\s*\n/)) {
+          if (/^\s*(#|[-*]\s|!\[|\|)/.test(p)) continue; // headings, lists, images, tables
+          p = p
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+            .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+            .replace(/https?:\/\/\S+/g, " ")
+            .replace(/<[^>]+>/g, " ");
+          p = decodeEntities(p).replace(/\s+/g, " ").trim();
+          if (p.length < 25) continue;
+          const k = normKey(p);
+          if (seen.has(k) || k === titleKeyStr) continue;
+          seen.add(k);
+          paras.push(p);
+          if (paras.join(" ").length > 320) break;
+        }
+        return truncate(paras.join(" "), 300);
+      }
+
+      function normKey(s) {
+        return String(s || "").toLowerCase().normalize("NFKD")
+          .replace(/[‘’“”'"]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+      }
+
       function publisherFromUrl(url) {
         try {
           const host = new URL(url).hostname.replace(/^www\./, "");
-          return host === "news.google.com" ? "Google News" : host;
-        } catch (e) { return "Web"; }
+          // Google redirect links hide the real publisher.
+          if (/(^|\.)google\.com$/.test(host)) return "";
+          return host;
+        } catch (e) { return ""; }
+      }
+
+      // Stable key for URL de-dupe: strip tracking/session params.
+      function urlKey(url) {
+        try {
+          const u = new URL(url);
+          ["gsessionid", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "oc", "hl", "gl", "ceid"].forEach((p) => u.searchParams.delete(p));
+          return (u.hostname.replace(/^www\./, "") + u.pathname.replace(/\/$/, "") + (u.search || "")).toLowerCase();
+        } catch (e) { return String(url).toLowerCase(); }
+      }
+
+      function topicsFor(title, summary) {
+        const text = (title + " " + summary).toLowerCase();
+        return TOPICS.filter((t) => t.re.test(text)).map((t) => t.id);
+      }
+
+      function timeOf(a) {
+        const t = a.publishedAt ? new Date(a.publishedAt).getTime() : NaN;
+        return isNaN(t) ? 0 : t;
+      }
+
+      // ---------- SAME-STORY CLUSTERING ----------
+      // Different outlets cover one event with different headlines
+      // ("Australia's surrogacy laws could receive major shake-up" /
+      // "Landmark review recommends major shake-up to Australia's surrogacy laws").
+      // Group them so one card shows the story + "N more reports".
+      const STOP = new Set("a an the and or of to in on for with by at from as is are was were be been it its this that these those how why what who new could would may might can will says say said after over under into about up out than more most just not no their his her our your".split(" "));
+      const DOMAIN = new Set(["ivf", "ferti", "infer", "surro", "embry", "treat", "clini", "study", "law", "news", "male", "men", "women", "sperm", "egg", "donor", "healt", "baby", "babie", "coupl", "patie", "pregn", "risk", "genet", "cause", "scien", "resea", "lates", "test", "know", "repro", "mothe", "paren", "famil"]);
+
+      function titleTokens(title) {
+        return new Set(
+          normKey(title).split(" ")
+            .filter((w) => w.length > 2 && !STOP.has(w))
+            .map((w) => w.replace(/s$/, "").slice(0, 5))
+        );
+      }
+
+      function sameStory(a, b) {
+        const dt = Math.abs(timeOf(a) - timeOf(b));
+        if (timeOf(a) && timeOf(b) && dt > 5 * 864e5) return false;
+        let shared = 0, sharedSpecific = 0;
+        for (const t of a._tok) if (b._tok.has(t)) { shared++; if (!DOMAIN.has(t)) sharedSpecific++; }
+        const minSize = Math.min(a._tok.size, b._tok.size) || 1;
+        return shared >= 3 && sharedSpecific >= 2 && shared / minSize >= 0.5;
+      }
+
+      const richness = (a) => (a.imageUrl ? 2 : 0) + (a.summary ? Math.min(a.summary.length / 100, 3) : 0) + (a.publisher ? 1 : 0);
+
+      function clusterStories(list) {
+        list.forEach((a) => (a._tok = titleTokens(a.title)));
+        const parent = list.map((_, i) => i);
+        const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+        for (let i = 0; i < list.length; i++)
+          for (let j = i + 1; j < list.length; j++)
+            if (find(i) !== find(j) && sameStory(list[i], list[j])) parent[find(j)] = find(i);
+
+        const groups = new Map();
+        list.forEach((a, i) => {
+          const r = find(i);
+          if (!groups.has(r)) groups.set(r, []);
+          groups.get(r).push(a);
+        });
+
+        const out = [];
+        for (const g of groups.values()) {
+          g.sort((x, y) => richness(y) - richness(x));
+          const lead = { ...g[0] };
+          lead.publishedAt = g.reduce((best, a) => (timeOf(a) > timeOf({ publishedAt: best }) ? a.publishedAt : best), lead.publishedAt);
+          lead.topics = [...new Set(g.flatMap((a) => a.topics))];
+          lead.related = g.slice(1).map((a) => ({ title: a.title, url: a.url, publisher: a.publisher }));
+          out.push(lead);
+        }
+        out.forEach((a) => delete a._tok);
+        list.forEach((a) => delete a._tok);
+        return out;
+      }
+
+      // ---------- DATA FETCHING & NORMALIZATION ----------
+      async function fetchPlaceholders() {
+        placeholders = CONFIG.FALLBACK_IMAGES.slice();
+        try {
+          localStorage.removeItem("santaan_placeholders_cache");
+          localStorage.removeItem("santaan_placeholders_timestamp");
+        } catch (e) {}
       }
 
       // One GET for all queries: the news-service merges + sorts them, and
@@ -734,6 +947,43 @@
         } finally {
           clearTimeout(timer);
         }
+      }
+
+      // Raw API item -> article (plain text fields; escaped only at render time).
+      function normalizeItem(item, cutoff) {
+        if (!item || !item.url || !item.title) return null;
+        const url = safeUrl(item.url);
+        if (!url) return null;
+        const title = decodeEntities(String(item.title)).replace(/\s+/g, " ").trim();
+        const publisherSummary = cleanSnippet(item.snippet || "", title);
+        // Plain-language rewrite from the news-service (AI-generated) when available.
+        const aiSummary = decodeEntities(item.aiSummary || "").trim();
+        const summary = aiSummary || publisherSummary;
+        const text = (title + " " + summary).toLowerCase();
+        if (!RELEVANT_RE.test(text) || JUNK_RE.test(text)) return null;
+
+        let publishedAt = "";
+        const t = item.date ? new Date(item.date).getTime() : NaN;
+        if (!isNaN(t)) {
+          if (t < cutoff) return null; // stale
+          publishedAt = new Date(t).toISOString();
+        }
+        return {
+          id: url,
+          title,
+          summary,
+          url,
+          source: "web",
+          publisher: decodeEntities(item.publisher || "") || publisherFromUrl(url),
+          publishedAt,
+          imageUrl: safeUrl(item.thumbnail || ""),
+          topics: topicsFor(title, summary + " " + publisherSummary),
+          publisherSummary,
+          isAiSummary: !!aiSummary,
+          // Plain-language "what this means for you" — filled by the news-service when available.
+          forYou: decodeEntities(item.forYou || ""),
+          related: [],
+        };
       }
 
       function getPlaceholder() {
@@ -754,94 +1004,57 @@
         return `linear-gradient(${angle}deg, hsl(${h1}, ${s1}%, ${l1}%), hsl(${h2}, ${s2}%, ${l2}%))`;
       }
 
-      async function fetchNews(force = false) {
-        const timestamp = localStorage.getItem('santaan_news_timestamp');
-        // Short browser cache: the news-service + Vercel CDN already cache for
-        // an hour, so the browser only needs to avoid refetching on every click.
-        const REFRESH_AFTER = 30 * 60 * 1000;
-        
-        // Skip if we fetched within the last 30 minutes
-        if (!force && articles.length > 0 && timestamp && (Date.now() - timestamp < REFRESH_AFTER)) {
-            console.log("News logic: Using cached news (under 30 min old), skipping API call.");
-            return;
-        }
+      const byNewest = (a, b) => timeOf(b) - timeOf(a);
 
-        console.log("Fetching fresh news...");
+      async function fetchNews(force = false) {
+        const timestamp = Number(localStorage.getItem("santaan_news_timestamp"));
+        const REFRESH_AFTER = 30 * 60 * 1000;
+        if (!force && articles.length > 0 && timestamp && Date.now() - timestamp < REFRESH_AFTER) return;
+
         document.getElementById("loader").classList.remove("hidden");
-        if (articles.length === 0) {
-            document.getElementById("news-container").classList.add("opacity-40");
-        }
+        if (articles.length === 0) document.getElementById("news-container").classList.add("opacity-40");
 
         try {
           const items = await fetchNewsResults();
+          const cutoff = Date.now() - CONFIG.MAX_AGE_DAYS * 864e5;
 
-          const cutoff = Date.now() - CONFIG.MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
-          let normalized = [];
-          [items].forEach((list) => {
-            list.forEach((item) => {
-              if (!item || !item.url || !item.title) return;
-              const t = item.date ? new Date(item.date).getTime() : NaN;
-              if (!isNaN(t) && t < cutoff) return; // drop stale articles
-              normalized.push({
-                id: item.url,
-                title: escapeHtml(item.title),
-                summary: escapeHtml(item.snippet || ""),
-                url: item.url,
-                source: "web",
-                publisher: escapeHtml(publisherFromUrl(item.url)),
-                publishedAt: item.date || "",
-                imageUrl: item.thumbnail || "",
-              });
-            });
-          });
-
-          // Drop cached items from the retired providers or older than the cutoff
-          articles = articles.filter(a => {
-            const t = new Date(a.publishedAt).getTime();
-            return a.source === "web" && (isNaN(t) || t >= cutoff);
-          });
-
-          const allUrls = new Set();
-          const mergedArticles = [];
-
-          [...normalized, ...articles].forEach(article => {
-              if (!article.url || !article.title) return;
-              const url = article.url.split("?")[0].toLowerCase().replace(/\/$/, "");
-              if (!allUrls.has(url)) {
-                  allUrls.add(url);
-                  mergedArticles.push(article);
-              }
-          });
-
-          mergedArticles.sort((a, b) => {
-              const dateA = new Date(a.publishedAt);
-              const dateB = new Date(b.publishedAt);
-              const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime();
-              const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime();
-              return timeB - timeA;
-          });
-
-          // Limit to top 50 articles
-          const updatedArticles = mergedArticles.slice(0, 50);
-
-          if (JSON.stringify(updatedArticles) !== JSON.stringify(articles)) {
-              articles = updatedArticles;
-              localStorage.setItem('santaan_news_cache', JSON.stringify(articles));
-              localStorage.setItem('santaan_news_timestamp', Date.now());
-              renderArticles();
-          } else if (force || articles.length === 0) {
-              localStorage.setItem('santaan_news_timestamp', Date.now());
-              renderArticles();
+          // De-dupe by URL first (keeps the first, i.e. freshest-from-API, copy).
+          const seen = new Set();
+          const fresh = [];
+          for (const item of items) {
+            const a = normalizeItem(item, cutoff);
+            if (!a) continue;
+            const k = urlKey(a.url);
+            if (seen.has(k)) continue;
+            seen.add(k);
+            fresh.push(a);
           }
+
+          // Replace (not merge) with the fresh set: merging with the old cache
+          // is what kept stale stories around forever.
+          const updated = clusterStories(fresh).sort(byNewest).slice(0, CONFIG.MAX_ARTICLES);
+
+          if (updated.length === 0 && articles.length > 0) {
+            // Upstream returned nothing usable — keep showing what we have.
+          } else if (JSON.stringify(updated) !== JSON.stringify(articles)) {
+            articles = updated;
+            try {
+              localStorage.setItem("santaan_news_cache", JSON.stringify(articles));
+            } catch (e) {}
+            renderChips();
+            renderArticles();
+          } else if (force) {
+            renderArticles();
+          }
+          try { localStorage.setItem("santaan_news_timestamp", String(Date.now())); } catch (e) {}
           document.getElementById("error-state").classList.add("hidden");
           document.getElementById("news-container").classList.remove("hidden");
-
         } catch (err) {
           console.error("Global fetch error:", err);
           if (articles.length === 0) {
-              document.getElementById("error-state").classList.remove("hidden");
-              document.getElementById("news-container").classList.add("hidden");
-              document.getElementById("article-count").textContent = "0";
+            document.getElementById("error-state").classList.remove("hidden");
+            document.getElementById("news-container").classList.add("hidden");
+            document.getElementById("article-count").textContent = "0";
           }
         } finally {
           document.getElementById("loader").classList.add("hidden");
@@ -849,68 +1062,154 @@
         }
       }
 
+      // ---------- DATES ----------
       function formatDate(dateStr) {
-        try {
-          const date = new Date(dateStr);
-          return date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          });
-        } catch (e) {
-          return dateStr;
+        const t = dateStr ? new Date(dateStr).getTime() : NaN;
+        if (isNaN(t)) return "";
+        const diff = Date.now() - t;
+        const h = Math.floor(diff / 36e5);
+        if (diff < 36e5) return "Just now";
+        if (h < 24) return h + "h ago";
+        const d = Math.floor(h / 24);
+        if (d < 7) return d === 1 ? "Yesterday" : d + " days ago";
+        return new Date(t).toLocaleDateString("en-US", {
+          month: "short", day: "numeric",
+          ...(new Date(t).getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}),
+        });
+      }
+
+      // ---------- FILTERS + SEARCH ----------
+      const topicLabel = (id) => (TOPICS.find((t) => t.id === id) || {}).label || id;
+
+      function matchesFilters(a) {
+        if (activeTopic !== "all" && !(a.topics || []).includes(activeTopic)) return false;
+        if (!searchQuery) return true;
+        const hay = [a.title, a.summary, a.publisherSummary, a.publisher, a.forYou, ...(a.topics || []).map(topicLabel),
+          ...(a.related || []).map((r) => r.title)].join(" ").toLowerCase();
+        return searchQuery.toLowerCase().split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+      }
+
+      function renderChips() {
+        const base = currentView === "all" ? articles : bookmarks;
+        const counts = { all: base.length };
+        base.forEach((a) => (a.topics || []).forEach((t) => (counts[t] = (counts[t] || 0) + 1)));
+        const chips = [{ id: "all", label: "All" }, ...TOPICS];
+        document.getElementById("topic-chips").innerHTML = chips
+          .map((c) => `<button type="button" class="chip" data-topic="${c.id}" aria-pressed="${activeTopic === c.id}">
+              ${escapeHtml(c.label)}<span class="chip-count">${counts[c.id] || 0}</span></button>`)
+          .join("");
+      }
+
+      document.getElementById("topic-chips").addEventListener("click", (e) => {
+        const btn = e.target.closest(".chip");
+        if (!btn) return;
+        activeTopic = btn.dataset.topic;
+        try { if (window.gtag) gtag("event", "filter_topic", { topic: activeTopic }); } catch (err) {}
+        syncUrl();
+        renderChips();
+        renderArticles();
+      });
+
+      const searchInput = document.getElementById("news-search");
+      const searchClear = document.getElementById("search-clear");
+      let searchTimer = null;
+      let searchLogTimer = null;
+      searchInput.addEventListener("input", () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          searchQuery = searchInput.value.trim();
+          searchClear.classList.toggle("hidden", !searchQuery);
+          syncUrl();
+          renderArticles(true);
+          clearTimeout(searchLogTimer);
+          searchLogTimer = setTimeout(() => {
+            try { if (searchQuery && window.gtag) gtag("event", "search", { search_term: searchQuery }); } catch (err) {}
+          }, 1500);
+        }, 150);
+      });
+      searchClear.addEventListener("click", () => {
+        searchInput.value = "";
+        searchQuery = "";
+        searchClear.classList.add("hidden");
+        syncUrl();
+        renderArticles(true);
+        searchInput.focus();
+      });
+
+      // Shareable / digest deep links: ?topic=law&q=australia
+      function syncUrl() {
+        const u = new URL(location.href);
+        activeTopic === "all" ? u.searchParams.delete("topic") : u.searchParams.set("topic", activeTopic);
+        searchQuery ? u.searchParams.set("q", searchQuery) : u.searchParams.delete("q");
+        history.replaceState(null, "", u.pathname + (u.search || "") + u.hash);
+      }
+
+      function readUrl() {
+        const sp = new URLSearchParams(location.search);
+        const t = sp.get("topic");
+        if (t && TOPICS.some((x) => x.id === t)) activeTopic = t;
+        const q = sp.get("q");
+        if (q) {
+          searchQuery = q.slice(0, 100);
+          searchInput.value = searchQuery;
+          searchClear.classList.remove("hidden");
         }
       }
 
+      function clearFilters() {
+        activeTopic = "all";
+        searchQuery = "";
+        searchInput.value = "";
+        searchClear.classList.add("hidden");
+        syncUrl();
+        renderChips();
+        renderArticles();
+      }
+
+      // ---------- RENDERING ----------
       function createCard(article, index) {
-        const sourceColors = {
-          web: "bg-pink-500/10 text-pink-500 border-pink-500/20",
-        };
+        if (!article.displayImage) article.displayImage = article.imageUrl || getPlaceholder();
+        if (!article.bgGradient) article.bgGradient = getRandomGradient();
+        const img = escapeHtml(article.displayImage);
+        const title = escapeHtml(article.title);
+        const date = formatDate(article.publishedAt);
+        const isBookmarked = bookmarks.some((b) => b.url === article.url);
+        const tags = (article.topics || []).slice(0, 3)
+          .map((t) => `<span class="topic-tag">${escapeHtml(topicLabel(t))}</span>`).join("");
+        const relatedCount = (article.related || []).length;
 
-        if (!article.displayImage) {
-            article.displayImage = article.imageUrl || getPlaceholder();
-        }
-        if (!article.bgGradient) {
-            article.bgGradient = getRandomGradient();
-        }
-        const img = article.displayImage;
-
-        const isBookmarked = bookmarks.some(b => b.url === article.url);
-        
         return `
                 <article class="news-card news-card-hover glass rounded-[2rem] overflow-hidden flex flex-col h-full border border-gray-100 dark:border-white/5 cursor-pointer" onclick="openPanel(${index})" style="opacity: 1; transform: translateY(0);">
                     <div class="relative h-56 card-img-frame">
                         <div class="card-img-aura" style="background: ${article.bgGradient};"></div>
                         <div class="card-img-sharp">
-                            <img src="${img}" alt="${article.title}" loading="lazy">
+                            <img src="${img}" alt="" loading="lazy" referrerpolicy="no-referrer">
                         </div>
-                        <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="card-bookmark-btn" title="${isBookmarked ? 'Remove' : 'Bookmark'}">
-                            <svg class="w-4 h-4 transition-colors duration-300 ${isBookmarked ? 'fill-primary-500 text-primary-500' : 'fill-transparent text-white'}" stroke="currentColor" viewBox="0 0 24 24">
+                        <button onclick="event.stopPropagation(); toggleBookmark(event, ${index})" class="card-bookmark-btn" title="${isBookmarked ? "Remove" : "Bookmark"}" aria-label="${isBookmarked ? "Remove bookmark" : "Bookmark"}">
+                            <svg class="w-4 h-4 transition-colors duration-300 ${isBookmarked ? "fill-primary-500 text-primary-500" : "fill-transparent text-white"}" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                             </svg>
                         </button>
                     </div>
-                    
+
                     <div class="card-body">
                         <div class="card-meta">
-                            <span class="card-date">${formatDate(article.publishedAt)}</span>
+                            ${tags ? `<div class="card-tags">${tags}</div>` : ""}
+                            ${date ? `<span class="card-date">${date}</span>` : ""}
                         </div>
 
-                        <h2 class="card-title text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500">
-                            ${article.title}
-                        </h2>
-                        
-                        <p class="card-summary text-gray-500 dark:text-gray-400 line-clamp-3">
-                            ${article.summary || "No summary available for this article."}
-                        </p>
-                        
+                        <h2 class="card-title text-gray-800 dark:text-gray-100 line-clamp-2 hover:text-primary-500">${title}</h2>
+
+                        ${article.forYou ? `<div class="for-you"><strong>What this means for you <span class="ai-chip">AI</span></strong>${escapeHtml(article.forYou)}</div>` : ""}
+
+                        ${article.summary ? `<p class="card-summary text-gray-500 dark:text-gray-400 line-clamp-3">${escapeHtml(article.summary)}</p>` : ""}
+
                         <div class="card-footer">
-                            <span class="group inline-flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
-                                View Details
-                                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            <span class="flex flex-col gap-0.5">
+                                ${article.publisher ? `<span class="card-publisher">${escapeHtml(article.publisher)}</span>` : ""}
+                                ${relatedCount ? `<span class="related-pill">+${relatedCount} more report${relatedCount > 1 ? "s" : ""}</span>` : ""}
                             </span>
-                            
-                            <button onclick="event.stopPropagation(); shareArticle(${index})" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-primary-500 transition-colors" title="Share">
+                            <button onclick="event.stopPropagation(); shareArticle(${index})" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-primary-500 transition-colors" title="Share" aria-label="Share">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                             </button>
                         </div>
@@ -922,25 +1221,28 @@
       function renderArticles(skipAnimation = false) {
         const container = document.getElementById("news-container");
         const countEl = document.getElementById("article-count");
-        const displayList = currentView === 'all' ? articles : bookmarks;
+        const base = currentView === "all" ? articles : bookmarks;
+        displayed = base.filter(matchesFilters);
+        const filtering = activeTopic !== "all" || !!searchQuery;
 
-        if (displayList.length === 0) {
-          container.innerHTML =
-            `<div class="col-span-full py-20 text-center text-gray-500">
-                ${currentView === 'bookmarks' ? 'You haven\'t bookmarked any articles yet.' : 'No articles found. Check back later.'}
-            </div>`;
+        document.getElementById("article-count-label").textContent =
+          (displayed.length === 1 ? "story" : "stories") + (filtering ? " of " + base.length : "");
+
+        if (displayed.length === 0) {
+          let msg;
+          if (filtering && base.length) {
+            msg = `No stories match${searchQuery ? ` “${escapeHtml(searchQuery)}”` : ""}${activeTopic !== "all" ? ` in ${escapeHtml(topicLabel(activeTopic))}` : ""}.
+              <br><button type="button" onclick="clearFilters()" class="mt-4 px-5 py-2 rounded-xl bg-primary-600 text-white font-bold">Clear filters</button>`;
+          } else {
+            msg = currentView === "bookmarks" ? "You haven't bookmarked any articles yet." : "No articles found. Check back later.";
+          }
+          container.innerHTML = `<div class="col-span-full py-20 text-center text-gray-500">${msg}</div>`;
           countEl.textContent = "0";
           return;
         }
 
-        countEl.textContent = displayList.length;
-        container.innerHTML = displayList
-          .map((article, idx) => {
-              // We need to pass the REAL index of the article if we want to support panel opening correctly
-              // but since createCard uses global 'articles' or 'bookmarks' based on 'currentView' index is fine
-              return createCard(article, idx);
-          })
-          .join("");
+        countEl.textContent = displayed.length;
+        container.innerHTML = displayed.map((a, idx) => createCard(a, idx)).join("");
 
         if (!skipAnimation) {
           gsap.from(".news-card", {
@@ -949,42 +1251,48 @@
             duration: 0.5,
             stagger: { amount: 0.6, from: "start" },
             ease: "power2.out",
-            clearProps: "all"
+            clearProps: "all",
           });
         }
       }
 
-      // Side Panel Logic
+      // ---------- SIDE PANEL ----------
       const sidePanel = document.getElementById("side-panel");
       const overlay = document.getElementById("side-panel-overlay");
       const closeBtn = document.getElementById("close-panel");
 
       function openPanel(index) {
-        const article = currentView === 'all' ? articles[index] : bookmarks[index];
-        try { if (article && window.gtag) gtag('event', 'select_content', { content_type: 'article', item_id: article.url, article_title: article.title, article_source: article.source || '' }); } catch (e) {}
+        const article = displayed[index];
+        if (!article) return;
+        try { if (window.gtag) gtag("event", "select_content", { content_type: "article", item_id: article.url, article_title: article.title, article_source: article.publisher || "" }); } catch (e) {}
         const content = document.getElementById("panel-content");
         const sourceUrl = document.getElementById("panel-source-url");
-        
+        const tags = (article.topics || []).map((t) => `<span class="topic-tag">${escapeHtml(topicLabel(t))}</span>`).join("");
+        const related = (article.related || [])
+          .map((r) => `<li><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-gray-700 dark:text-gray-200 hover:text-primary-500">${escapeHtml(r.title)}</a>${r.publisher ? `<span class="block text-xs text-gray-400">${escapeHtml(r.publisher)}</span>` : ""}</li>`)
+          .join("");
+
         content.innerHTML = `
-            <img src="${article.displayImage}" class="w-full h-64 object-cover rounded-2xl shadow-lg mb-6" />
-            <div class="flex items-center justify-between">
-                <span class="text-primary-500 font-bold text-sm uppercase">${article.publisher}</span>
+            <img src="${escapeHtml(article.displayImage)}" alt="" referrerpolicy="no-referrer" class="w-full h-64 object-cover rounded-2xl shadow-lg mb-6" />
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-primary-500 font-bold text-sm uppercase">${escapeHtml(article.publisher || "News")}</span>
                 <span class="text-gray-400 text-xs">${formatDate(article.publishedAt)}</span>
             </div>
-            <h2 class="text-2xl font-display font-black leading-tight text-gray-800 dark:text-white">${article.title}</h2>
-            <div class="prose prose-sm dark:prose-invert max-w-none">
-                <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
-                    ${article.summary || "Detailed highlights of this breakthrough are being summarized. Please visit the primary source for the full clinical context."}
-                </p>
-                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 mt-8">
-                    <p class="text-xs text-gray-400 italic">This news item was aggregated and normalized by Santaan's intelligence engine to provide the most relevant updates in IVF and reproductive science.</p>
-                </div>
+            ${tags ? `<div class="card-tags">${tags}</div>` : ""}
+            <h2 class="text-2xl font-display font-black leading-tight text-gray-800 dark:text-white">${escapeHtml(article.title)}</h2>
+            ${article.forYou ? `<div class="for-you"><strong>What this means for you <span class="ai-chip">AI</span></strong>${escapeHtml(article.forYou)}</div>` : ""}
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+                ${escapeHtml(article.summary || "No summary was provided by the publisher. Open the full article for details.")}
+            </p>
+            ${article.isAiSummary ? `<p class="ai-note">Plain-language summary written by AI from the publisher's text. It may miss details — read the full article before acting on it.</p>` : ""}
+            ${article.isAiSummary && article.publisherSummary ? `<div><h3 class="font-bold text-sm uppercase tracking-wide text-gray-400 mb-2">From the publisher</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">${escapeHtml(article.publisherSummary)}</p></div>` : ""}
+            ${related ? `<div><h3 class="font-bold text-sm uppercase tracking-wide text-gray-400 mb-3">More coverage of this story</h3><ul class="space-y-3">${related}</ul></div>` : ""}
+            <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5">
+                <p class="text-xs text-gray-400 italic">News is aggregated from public sources for general information and isn't medical advice. Talk to your fertility specialist about your own situation.</p>
             </div>
         `;
-        
         sourceUrl.href = article.url;
 
-        // Animate Panel
         overlay.classList.remove("hidden");
         gsap.to(overlay, { opacity: 1, duration: 0.3 });
         gsap.to(sidePanel, { x: 0, duration: 0.5, ease: "power3.out" });
@@ -992,131 +1300,105 @@
       }
 
       function closePanelFunc() {
-        gsap.to(overlay, { 
-            opacity: 0, 
-            duration: 0.3, 
-            onComplete: () => overlay.classList.add("hidden") 
-        });
+        gsap.to(overlay, { opacity: 0, duration: 0.3, onComplete: () => overlay.classList.add("hidden") });
         gsap.to(sidePanel, { x: "100%", duration: 0.4, ease: "power3.in" });
         document.body.style.overflow = "";
       }
 
       closeBtn.addEventListener("click", closePanelFunc);
       overlay.addEventListener("click", closePanelFunc);
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePanelFunc(); });
 
-      function shareArticle(index) {
-          const article = currentView === 'all' ? articles[index] : bookmarks[index];
-          if (navigator.share) {
-              navigator.share({
-                  title: article.title,
-                  text: article.summary,
-                  url: article.url
-              });
-          } else {
-              alert("URL copied to clipboard: " + article.url);
-          }
+      async function shareArticle(index) {
+        const article = displayed[index];
+        if (!article) return;
+        if (navigator.share) {
+          try { await navigator.share({ title: article.title, text: article.summary, url: article.url }); } catch (e) {}
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(article.url);
+          alert("Link copied to clipboard");
+        } catch (e) {
+          prompt("Copy this link:", article.url);
+        }
       }
 
       function toggleBookmark(event, index) {
-          const article = currentView === 'all' ? articles[index] : bookmarks[index];
-          const bIdx = bookmarks.findIndex(b => b.url === article.url);
-          
-          let isBookmarked = false;
-          if (bIdx > -1) {
-              bookmarks.splice(bIdx, 1);
+        const article = displayed[index];
+        if (!article) return;
+        const bIdx = bookmarks.findIndex((b) => b.url === article.url);
+        let isBookmarked = false;
+        if (bIdx > -1) {
+          bookmarks.splice(bIdx, 1);
+        } else {
+          bookmarks.push(article);
+          isBookmarked = true;
+        }
+        try { localStorage.setItem("santaan_bookmarks", JSON.stringify(bookmarks)); } catch (e) {}
+        updateBookmarkUI();
+
+        const btn = event && event.currentTarget;
+        if (btn) {
+          const svg = btn.querySelector("svg");
+          if (isBookmarked) {
+            svg.classList.add("fill-primary-500", "text-primary-500");
+            svg.classList.remove("fill-transparent", "text-white");
+            btn.title = "Remove";
+            gsap.fromTo(btn, { scale: 0.8 }, { scale: 1, duration: 0.4, ease: "back.out(1.5)" });
           } else {
-              bookmarks.push(article);
-              isBookmarked = true;
+            svg.classList.add("fill-transparent", "text-white");
+            svg.classList.remove("fill-primary-500", "text-primary-500");
+            btn.title = "Bookmark";
           }
-          
-          localStorage.setItem('santaan_bookmarks', JSON.stringify(bookmarks));
-          updateBookmarkUI();
+        }
 
-          if (event && event.currentTarget) {
-              const svg = event.currentTarget.querySelector('svg');
-              if (isBookmarked) {
-                  svg.classList.add('fill-primary-500', 'text-primary-500');
-                  svg.classList.remove('fill-transparent', 'text-white');
-                  event.currentTarget.title = 'Remove';
-                  gsap.fromTo(event.currentTarget, 
-                    { scale: 0.8 }, 
-                    { scale: 1, duration: 0.4, ease: "back.out(1.5)" }
-                  );
-              } else {
-                  svg.classList.add('fill-transparent', 'text-white');
-                  svg.classList.remove('fill-primary-500', 'text-primary-500');
-                  event.currentTarget.title = 'Bookmark';
-              }
-          }
-
-          if (currentView === 'bookmarks' && !isBookmarked) {
-              if (event && event.currentTarget) {
-                  const card = event.currentTarget.closest('.news-card');
-                  if (card) {
-                      gsap.to(card, {
-                          opacity: 0,
-                          scale: 0.9,
-                          duration: 0.3,
-                          onComplete: () => renderArticles(true)
-                      });
-                  } else {
-                      renderArticles(true);
-                  }
-              } else {
-                  renderArticles(true);
-              }
-          }
+        if (currentView === "bookmarks" && !isBookmarked) {
+          const card = btn && btn.closest(".news-card");
+          const rerender = () => { renderChips(); renderArticles(true); };
+          if (card) gsap.to(card, { opacity: 0, scale: 0.9, duration: 0.3, onComplete: rerender });
+          else rerender();
+        }
       }
 
       function updateBookmarkUI() {
-          const countBadge = document.getElementById('bookmark-count-badge');
-          if (bookmarks.length > 0) {
-              countBadge.textContent = bookmarks.length;
-              countBadge.classList.remove('hidden');
-          } else {
-              countBadge.classList.add('hidden');
-          }
+        const countBadge = document.getElementById("bookmark-count-badge");
+        if (bookmarks.length > 0) {
+          countBadge.textContent = bookmarks.length;
+          countBadge.classList.remove("hidden");
+        } else {
+          countBadge.classList.add("hidden");
+        }
       }
 
-      // Bookmark View Switcher
-      document.getElementById('view-bookmarks').addEventListener('click', function() {
-          const btn = this;
-          const label = btn.querySelector('span:not(#bookmark-count-badge)');
-          
-          if (currentView === 'all') {
-              currentView = 'bookmarks';
-              label.textContent = 'View All News';
-              document.getElementById('hero-title').textContent = 'Your Saved Insights.';
-              btn.classList.add('bg-primary-500/10', 'text-primary-500');
-          } else {
-              currentView = 'all';
-              label.textContent = 'My Bookmarks';
-              document.getElementById('hero-title').textContent = 'Fertility & Innovation.';
-              btn.classList.remove('bg-primary-500/10', 'text-primary-500');
-          }
-          renderArticles();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById("view-bookmarks").addEventListener("click", function () {
+        const btn = this;
+        const label = btn.querySelector("span:not(#bookmark-count-badge)");
+        if (currentView === "all") {
+          currentView = "bookmarks";
+          label.textContent = "View All News";
+          document.getElementById("hero-title").textContent = "Your Saved Insights.";
+          btn.classList.add("bg-primary-500/10", "text-primary-500");
+        } else {
+          currentView = "all";
+          label.textContent = "My Bookmarks";
+          document.getElementById("hero-title").textContent = "Fertility & Innovation.";
+          btn.classList.remove("bg-primary-500/10", "text-primary-500");
+        }
+        renderChips();
+        renderArticles();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
-      // Refresh News Button Logic
-      document.getElementById('refresh-news')?.addEventListener('click', async () => {
-          const btn = document.getElementById('refresh-news');
-          const icon = btn.querySelector('svg');
-          icon.classList.add('animate-spin');
-          
-          // Switch to "all" view if user is refreshing from bookmarks
-          if (currentView !== 'all') {
-              document.getElementById('view-bookmarks').click();
-          }
-          
-          // Force fetch fresh news
-          await fetchNews(true);
-          
-          icon.classList.remove('animate-spin');
+      document.getElementById("refresh-news")?.addEventListener("click", async () => {
+        const btn = document.getElementById("refresh-news");
+        const icon = btn.querySelector("svg");
+        icon.classList.add("animate-spin");
+        if (currentView !== "all") document.getElementById("view-bookmarks").click();
+        await fetchNews(true);
+        icon.classList.remove("animate-spin");
       });
 
-
-      // Header Scroll Effect (passive for no scroll-jank)
       window.addEventListener("scroll", () => {
         const header = document.getElementById("header");
         if (window.scrollY > 50) {
@@ -1128,62 +1410,57 @@
         }
       }, { passive: true });
 
-      // INIT
+      // ---------- STORAGE MIGRATION ----------
+      // Before v4, titles/summaries were stored HTML-escaped. Now they're plain
+      // text and escaped at render — decode old bookmarks once.
+      function loadBookmarks() {
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem("santaan_bookmarks") || "[]"); } catch (e) {}
+        if (!Array.isArray(list)) list = [];
+        if (localStorage.getItem("santaan_bookmarks_v") !== "2") {
+          list = list.filter((b) => b && safeUrl(b.url)).map((b) => {
+            const title = decodeEntities(b.title || "");
+            const summary = decodeEntities(b.summary || "");
+            return { ...b, title, summary, publisher: decodeEntities(b.publisher || ""),
+              topics: b.topics || topicsFor(title, summary), related: b.related || [], forYou: b.forYou || "" };
+          });
+          try {
+            localStorage.setItem("santaan_bookmarks", JSON.stringify(list));
+            localStorage.setItem("santaan_bookmarks_v", "2");
+          } catch (e) {}
+        }
+        return list;
+      }
+
+      // ---------- INIT ----------
       async function init() {
-        // Initialize theme carefully
         if (!localStorage.theme) localStorage.theme = "light";
         updateTheme();
 
-        // Animation for hero
-        gsap.from("#hero > *", {
-          opacity: 0,
-          y: 30,
-          duration: 1,
-          stagger: 0.2,
-          ease: "power4.out",
-        });
+        gsap.from("#hero > *", { opacity: 0, y: 30, duration: 1, stagger: 0.2, ease: "power4.out" });
 
-        // Initialize bookmark UI
+        bookmarks = loadBookmarks();
         updateBookmarkUI();
-
-        // 0. Initialize Background Animation
-        initBackgroundAnimation();
-
-        // 1. First Load Placeholders (Required for images)
+        readUrl();
         await fetchPlaceholders();
 
-        // 2. Load and Render from Cache IMMEDIATELY
-        if (localStorage.getItem('santaan_news_cache_v') !== '3') {
-            localStorage.removeItem('santaan_news_cache');
-            localStorage.removeItem('santaan_news_timestamp');
-            localStorage.setItem('santaan_news_cache_v', '3');
+        if (localStorage.getItem("santaan_news_cache_v") !== CONFIG.CACHE_VERSION) {
+          localStorage.removeItem("santaan_news_cache");
+          localStorage.removeItem("santaan_news_timestamp");
+          localStorage.setItem("santaan_news_cache_v", CONFIG.CACHE_VERSION);
         }
-        const cachedNews = localStorage.getItem('santaan_news_cache');
+        const cachedNews = localStorage.getItem("santaan_news_cache");
         if (cachedNews) {
-            try {
-                articles = JSON.parse(cachedNews);
-                // Sort cache just in case
-                articles.sort((a, b) => {
-                    const dateA = new Date(a.publishedAt);
-                    const dateB = new Date(b.publishedAt);
-                    const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime();
-                    const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime();
-                    return timeB - timeA;
-                });
-                console.log("Sync: Rendered from cache (" + articles.length + ")");
-                renderArticles();
-            } catch (e) {
-                console.error("Cache error:", e);
-            }
+          try {
+            articles = JSON.parse(cachedNews).sort(byNewest);
+          } catch (e) {
+            console.error("Cache error:", e);
+          }
         }
+        renderChips();
+        if (articles.length) renderArticles();
 
-        // 3. Fetch Fresh Data only if needed
         await fetchNews();
-      }
-
-      function initBackgroundAnimation() {
-          // Shapes defined in HTML + animated via CSS keyframes.
-          // No JS tweens needed — compositor handles it natively.
       }
 
       window.addEventListener("DOMContentLoaded", init);
